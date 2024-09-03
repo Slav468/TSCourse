@@ -169,7 +169,6 @@ const waterUserData = {
 
 const elRate: number = 0.45;
 const wRate: number = 2;
-
 const monthPayments: number[] = [0, 0]; // [electricity, water]
 
 const calculatePayments = (
@@ -216,3 +215,209 @@ console.log(invoice);
 
 // ----------------------------------------------------------------//
 //! Task
+
+// ! Tuples (кортежи)
+//* Запись набора данных в строгом порядке,  кортеж технически - это массив.
+// * элементы строго определены при их типизировании
+
+const userDataTuple: [boolean, number, string] = [true, 1, 'string'];
+
+//? расширение кортежей через spread/rest оператор
+const userDataTuple2: [boolean, number, ...string[]] = [true, 1, 'string'];
+const userDataTuple3: [boolean, ...number[], string] = [true, 1, 'string'];
+const userDataTuple4: [...boolean[], number, string] = [true, 1, 'string'];
+
+// ! Union (объединение типов)\
+// * string | number - это строка или число (Union)
+const message: string | number = 'Hello';
+const messages: string[] | number[] = ['a', 'b', 'c'];
+
+// ! Narrowing (сужение типов)
+// * вручную проверили через условие - это и есть сужение типов
+// function printMsg(msg: string | number): void {
+// 	if (typeof msg === 'string') {
+// 		// тут msg это строка
+// 		console.log(msg.toUpperCase());
+// 	} else {
+// 		// тут msg это число
+// 		console.log(msg.toExponential());
+// 	}
+// 	// тут msg это либо строка, либо число (Union)
+// 	console.log(msg);
+// }
+
+function printMsg(msg: string[] | number): void {
+	if (Array.isArray(msg)) {
+		msg.forEach(item => console.log(item));
+	} else {
+		console.log(msg.toFixed);
+	}
+}
+
+printMsg(4);
+
+const printReadings = (a: number | string, b: number | boolean) => {
+	if (typeof a === 'number' && typeof b === 'number') {
+		console.log(a + b);
+	}
+};
+const printReadings2 = (a: number[] | string) => {
+	console.log(a.slice(0, 3));
+};
+
+function checkReadings(readings: { system: number } | { user: number }): void {
+	if ('system' in readings) {
+		console.log(readings.system);
+	} else {
+		console.log(readings.user);
+	}
+}
+
+function logValue(x: string | Date) {
+	if (x instanceof Date) {
+		console.log(x.toUTCString());
+	}
+}
+
+// ! Literal types (примитивные литеральные типы)
+// *  это типы на основании конкретных значений примитивов
+// * (только то, что указано аннотации переменной)
+
+let hello: 'Hello' = 'Hello';
+// выдает ошибку, т.к. не может быть ничего другого кроме 'Hello'
+// hello = '';
+
+const port3000: 3000 = 3_000;
+const port3001: 3001 = 3_001;
+
+// ! Объектный литеральный тип (Object literal types)
+type ServerConfig = { protocol: 'http' | 'https'; port: 3_000 | 3_001 };
+const serverConfig: ServerConfig = {
+	protocol: 'https',
+	port: 3000,
+};
+
+// ! Пересечение типов (Intersection types)
+// *  это объединение типов - & (ServerConfig & Role)
+type Role = {
+	role: 'admin' | 'user';
+};
+
+type ConfigWithRole = ServerConfig & Role;
+
+const backupConfig: ConfigWithRole = {
+	protocol: 'http',
+	port: 3001,
+	role: 'admin',
+};
+
+//! Аннотация функции (Function annotations)
+type StartServer = (protocol: 'http' | 'https', port: 3_000 | 3_001) => string;
+
+const startServer: StartServer = (
+	protocol: 'http' | 'https',
+	port: 3_000 | 3_001
+) => {
+	if (port === port3000 || port === port3001) {
+		console.log(`Server started on ${protocol}://${port}`);
+		return 'Server started';
+	} else {
+		console.log('Error');
+		return "Error: Server can't be started";
+	}
+};
+startServer('http', port3000);
+startServer(serverConfig.protocol, serverConfig.port);
+
+//! Псевдонимы типов (Type aliases)
+// ? создается с помощью слова type и с Заглавной буквы
+// *существует только на этапе разработки
+type AnimationTimingFunc = 'ease' | 'linear' | 'ease-in' | 'ease-out';
+type AnimationID = string | number;
+type AnimationIterationCount = 'infinite' | number;
+
+function createAnimation(
+	id: AnimationID,
+	animationName: string,
+	timingFunc: AnimationTimingFunc = 'ease',
+	duration: number,
+	iterationCount: AnimationIterationCount = 'infinite'
+): void {
+	// const elem = document.querySelector(`#${id}`) as HTMLElement;
+	console.log(`${animationName} ${duration}ms ${timingFunc} ${iterationCount}`);
+	// if (elem) {
+	// elem.style.animation = `${animationName} ${duration}ms ${timingFunc} ${iterationCount}`;
+	// }
+}
+
+createAnimation('id', 'animation', 'ease', 1000, 'infinite');
+
+//! Interface (Интерфейсы)
+interface ConfigServerInterface {
+	protocol: 'http' | 'https';
+	port: 3_000 | 3_001;
+}
+
+//? Венгерская аннотация
+// https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D0%BD%D0%B3%D0%B5%D1%80%D1%81%D0%BA%D0%B0%D1%8F_%D0%BD%D0%BE%D1%82%D0%B0%D1%86%D0%B8%D1%8F
+
+interface IConfigServerInterface {
+	protocol: 'http' | 'https';
+	port: 3_000 | 3_001;
+	log: (msg: string) => void;
+}
+interface IRoleInterface {
+	role: 'admin' | 'user';
+}
+
+//? Пересечение типов для интерфейсов
+interface IConfigWithRole extends IConfigServerInterface, IRoleInterface {
+	// добавляем свойство
+	domain: 'com' | 'ru';
+}
+const serverCOfigInterface: IConfigWithRole = {
+	protocol: 'http',
+	port: 3000,
+	log: (msg: string): void => {
+		console.log(msg);
+	},
+	role: 'user',
+	// добавляем свойство
+	domain: 'com',
+};
+
+type TConfigFunc = (
+	protocol: 'http' | 'https',
+	port: 3_000 | 3_001,
+	log: (msg: string) => void
+) => string;
+
+const startServerInterface: TConfigFunc = (
+	protocol: 'http' | 'https',
+	port: 3_000 | 3_001
+) => {
+	if (port === port3000 || port === port3001) {
+		console.log(`Server started on ${protocol}://${port}`);
+		return 'Server started';
+	} else {
+		console.log('Error');
+		return "Error: Server can't be started";
+	}
+};
+startServerInterface(
+	serverCOfigInterface.protocol,
+	serverCOfigInterface.port,
+	serverCOfigInterface.log
+);
+
+//! Индексные свойства (Index properties)
+
+interface IStyles {
+	[key: string]: string;
+}
+
+const style: IStyles = {
+	position: 'absolute',
+	top: '20px',
+	left: '20px',
+};
