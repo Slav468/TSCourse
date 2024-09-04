@@ -218,7 +218,7 @@ console.log(invoice);
 
 // ! Tuples (кортежи)
 //* Запись набора данных в строгом порядке,  кортеж технически - это массив.
-// * элементы строго определены при их типизировании
+// * элементы строго определены при их аннотации
 
 const userDataTuple: [boolean, number, string] = [true, 1, 'string'];
 
@@ -227,7 +227,7 @@ const userDataTuple2: [boolean, number, ...string[]] = [true, 1, 'string'];
 const userDataTuple3: [boolean, ...number[], string] = [true, 1, 'string'];
 const userDataTuple4: [...boolean[], number, string] = [true, 1, 'string'];
 
-// ! Union (объединение типов)\
+// ! Union (объединение типов)
 // * string | number - это строка или число (Union)
 const message: string | number = 'Hello';
 const messages: string[] | number[] = ['a', 'b', 'c'];
@@ -236,13 +236,13 @@ const messages: string[] | number[] = ['a', 'b', 'c'];
 // * вручную проверили через условие - это и есть сужение типов
 // function printMsg(msg: string | number): void {
 // 	if (typeof msg === 'string') {
-// 		// тут msg это строка
+// тут msg это строка
 // 		console.log(msg.toUpperCase());
 // 	} else {
-// 		// тут msg это число
+// тут msg это число
 // 		console.log(msg.toExponential());
 // 	}
-// 	// тут msg это либо строка, либо число (Union)
+// тут msg это либо строка, либо число (Union)
 // 	console.log(msg);
 // }
 
@@ -317,7 +317,7 @@ type StartServer = (protocol: 'http' | 'https', port: 3_000 | 3_001) => string;
 const startServer: StartServer = (
 	protocol: 'http' | 'https',
 	port: 3_000 | 3_001
-) => {
+): string => {
 	if (port === port3000 || port === port3001) {
 		console.log(`Server started on ${protocol}://${port}`);
 		return 'Server started';
@@ -413,6 +413,7 @@ startServerInterface(
 //! Индексные свойства (Index properties)
 
 interface IStyles {
+	// индексное свойство
 	[key: string]: string;
 }
 
@@ -421,3 +422,230 @@ const style: IStyles = {
 	top: '20px',
 	left: '20px',
 };
+
+//! Типы (type) и Интерфейсы (interface) - разница
+/**
+	* Типы type - объявляются с помощью ключевого слова type
+	* Интерфейсы interface - объявляются с помощью ключевого слова interface
+	*****************************************
+	* Типы создаются через присваивание
+	* Интерфейсы создаются как class
+	****************************************
+	*Типы расширяются при помощи оператора &
+	*Интерфейсы расширяются при помощи extends
+	*****************************************
+	*Интерфейсы можно модифицировать объявляя ниже по коду тот же интерфейс и присваивать ему новые свойства (bad practice)
+	*Типы выдают ошибку при попытке модифицировать по тому же принципу
+	*****************************************
+	*Типы работают с примитивными типами (number, string, boolean, bigint, symbol)
+	*Интерфейсы работают с объектами (object)
+
+ */
+
+// ! Task for interface or type
+// ----------------------------------------------------------------//
+// структура данных склада с одеждой
+type TEmptyNumber = 'empty' | number;
+type TEmptyBool = 'empty' | boolean;
+
+interface ClothesWarehouse {
+	jackets: TEmptyNumber;
+	hats: TEmptyNumber;
+	socks: TEmptyNumber;
+	pants: TEmptyNumber;
+}
+
+// структура данных склада с канцтоварами
+
+interface StationeryWarehouse {
+	scissors: TEmptyNumber;
+	paper: TEmptyBool;
+}
+
+// структура данных склада с бытовой техникой
+
+interface AppliancesWarehouse {
+	dishwashers: TEmptyNumber;
+	cookers: TEmptyNumber;
+	mixers: TEmptyNumber;
+}
+
+// общая структура данных, наследует все данные из трех выше
+// + добавляет свои
+
+interface TotalWarehouse
+	extends ClothesWarehouse,
+		StationeryWarehouse,
+		AppliancesWarehouse {
+	deficit: boolean;
+	date: Date;
+}
+
+// главный объект со всеми данными, должен подходить под формат TotalWarehouse
+
+const totalData: TotalWarehouse = {
+	jackets: 5,
+	hats: 'empty',
+	socks: 'empty',
+	pants: 15,
+	scissors: 15,
+	paper: true,
+	dishwashers: 3,
+	cookers: 'empty',
+	mixers: 14,
+	deficit: true,
+	date: new Date(),
+};
+
+// Реализуйте функцию, которая принимает в себя главный объект totalData нужного формата
+// и возвращает всегда строку
+// Функция должна отфильтровать данные из объекта и оставить только те названия товаров, у которых значение "empty"
+// и поместить их в эту строку. Если таких товаров нет - возвращается другая строка (см ниже)
+
+// С данным объектом totalData строка будет выглядеть:
+// "We need this items: hats, socks, cookers"
+// Товары через запятую, в конце её не должно быть. Пробел после двоеточия, в конце строки его нет.
+
+type TPrintReport = (data: TotalWarehouse) => string;
+
+const printReport: TPrintReport = data => {
+	const result: string = Object.entries(data)
+		.filter(item => item[1] === 'empty')
+		.reduce((res, item) => `${res} ${item[0]},`, '');
+	if (result.trim().length) {
+		return `We need this items:${result.slice(0, -1)}`;
+	} else {
+		return 'Everything fine';
+	}
+};
+
+console.log(printReport(totalData));
+// ----------------------------------------------------------------//
+// ! Task for interface or type
+
+// ! Type Inference (механизм вывода типов)
+// не нужна аннотация типов если TS может это сделать сам
+
+// избегаем any
+let number10: number;
+number = 10;
+
+const userDataForInterface =
+	'{"isBirthdayData: boolean":"true", "ageData: number":"36", "userNameData: string":"John" }';
+
+interface IUserData {
+	isBirthdayData: boolean;
+	ageData: number;
+	userNameData: string;
+}
+
+const userDataWithoutAny: IUserData = JSON.parse(userDataForInterface);
+
+// вывод типов даст boolean
+let isOkay = true;
+// вывод типов даст true
+const isOkay2 = true;
+let movement: boolean | string = false;
+if (isOkay) {
+	movement = 'moving';
+}
+
+const arr = ['hello', 3, true, [true, 1]];
+
+// ! Модификаторы свойств (Property modifiers)
+//* Модификаторы свойств знак ? -  опциональное свойство (может быть или не быть)
+//* Модификаторы свойств знак ! - обязательное свойство (обязательно должно быть)
+//* Модификаторы свойств readonly - только для чтения
+interface PropertyModifier {
+	readonly login: string;
+	password: string;
+	age: number;
+	address?: string;
+	parents?: {
+		mother?: string;
+		father?: string;
+	};
+}
+
+const propertyObject: PropertyModifier = {
+	login: 'login',
+	password: 'password',
+	age: 50,
+};
+
+let dbName: string;
+sendUserData(propertyObject, 'Black');
+
+console.log(dbName!);
+
+function sendUserData(obj: PropertyModifier, dbName?: string): void {
+	dbName = 'Alex';
+	console.log(obj.parents?.father?.charAt(0), dbName?.toLowerCase);
+}
+
+const basicPorts: readonly number[] = [3_000, 3_001, 5_000];
+// только чтение при изменении элемента
+// basicPorts[2] = 4333;
+
+//! Enum (перечисления)
+//  при создании enum через const в скомпилированном файле не будет больших конструкций
+const enum Direction {
+	TOP,
+	LEFT,
+	RIGHT,
+	BOTTOM,
+}
+
+enum AnimTimingFunc {
+	EASE = 'ease',
+	LINEAR = 'linear',
+	EASE_IN = 'ease-in',
+	EASE_OUT = 'ease-out',
+	EASE_IN_OUT = 'ease-in-out',
+}
+enum AnimTimingFunc2 {
+	EASE = 2,
+	LINEAR = 3,
+	EASE_IN = 4,
+	EASE_OUT = 5,
+	EASE_IN_OUT = EASE * 7,
+}
+
+function frame(elem: string, dir: Direction, tFunc: AnimTimingFunc): void {
+	if (dir === Direction.RIGHT) {
+		console.log(tFunc);
+	}
+}
+
+frame('elem', Direction.RIGHT, AnimTimingFunc.EASE);
+
+//! Unknown (неизвестное)
+// сущность неизвестного типа
+
+let some: unknown;
+some = 'hello';
+// нельзя назначить тип Unknown для типа string
+// let data: string[] = some;
+
+function fetchData(data: unknown): void {
+	if (typeof data === 'string') {
+		console.log(data.toLowerCase());
+	}
+}
+
+function saveParse(s: string): unknown {
+	return JSON.parse(s);
+}
+
+const dataParse = saveParse(
+	'{"isBirthdayData":true, "ageData":36, "userNameData":"John" }'
+);
+
+function transferData(d: unknown): void {
+	if (typeof d === 'object' && d) {
+		console.log(d);
+	} else {
+		console.error('Error');
+	}
+}
+transferData(dataParse);
