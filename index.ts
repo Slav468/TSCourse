@@ -588,7 +588,8 @@ const basicPorts: readonly number[] = [3_000, 3_001, 5_000];
 // basicPorts[2] = 4333;
 
 //! Enum (перечисления)
-//  при создании enum через const в скомпилированном файле не будет больших конструкций
+//  при создании enum через const в скомпилированном файле не будет больших конструкций - использовать тольлко в крайнем случае
+
 const enum Direction {
 	TOP,
 	LEFT,
@@ -603,6 +604,7 @@ enum AnimTimingFunc {
 	EASE_OUT = 'ease-out',
 	EASE_IN_OUT = 'ease-in-out',
 }
+
 enum AnimTimingFunc2 {
 	EASE = 2,
 	LINEAR = 3,
@@ -627,6 +629,7 @@ some = 'hello';
 // нельзя назначить тип Unknown для типа string
 // let data: string[] = some;
 
+// избегаем типа any при парсе данных
 function fetchData(data: unknown): void {
 	if (typeof data === 'string') {
 		console.log(data.toLowerCase());
@@ -649,3 +652,99 @@ function transferData(d: unknown): void {
 	}
 }
 transferData(dataParse);
+
+//! Запросы типов
+//  data: typeof dataFromControl - проверка на соответствие типов
+const dataFromControl = {
+	water: 200,
+	el: 350,
+};
+
+function checkReadingsData(data: typeof dataFromControl): boolean {
+	const dataFromUser = {
+		water: 200,
+		el: 350,
+	};
+
+	if (data.el === dataFromUser.el && data.water === dataFromUser.water) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+const PI = 3.14;
+let PIClone: typeof PI;
+
+// ----------------------------------------------------------------//
+// ! Task
+
+// Перечисление с названием TypesOfMedia, которое включает строчные типы video, audio
+enum TypesOfMedia {
+	Video = 'video',
+	Audio = 'audio',
+}
+
+// Перечисление с названием FormatsOfMedia, которое включает строчные видео-форматы: .mp4, .mov, .mkv, .flv, .webM
+enum FormatsOfMedia {
+	MP4 = '.mp4',
+	MOV = '.mov',
+	MKV = '.mkv',
+	FLV = '.flv',
+	WEBM = '.webM',
+}
+
+// Описание интерфейса, в котором:
+// name - строка
+// type - один из перечисления выше
+// format = один из перечисления выше
+// subtitles - необязательное поле типа строка
+// marks - необязательное поле неизвестного типа
+
+interface IMedia {
+	name: string;
+	type: TypesOfMedia;
+	format: FormatsOfMedia;
+	subtitles?: string;
+	marks?: unknown;
+}
+
+function playMedia(
+	{ name, type, format, subtitles, marks }: IMedia = {
+		name: 'example',
+		type: TypesOfMedia.Video,
+		format: FormatsOfMedia.MKV,
+	}
+): string {
+	let marksLog: string;
+
+	// Создать функционал, что если marks - это массив, то "сложить" все элементы в одну строку и поместить в marksLog
+	// Если это строка, то просто поместить её в marksLog
+	// Если что-то другое - то marksLog = "Unsupported type of marks"
+	// Не допускайте any!
+	if (Array.isArray(marks)) {
+		marksLog = marks.join(', ');
+	} else if (typeof marks === 'string') {
+		marksLog = marks;
+	} else {
+		marksLog = 'Unsupported type of marks';
+	}
+
+	console.log(`Media ${name}${format} is ${type}
+    Marks: ${marksLog}
+    Subtitles: ${subtitles ?? 'none'}`);
+	// помните что это за оператор ??
+	// если нет данных в subtitles, то туда поместится "none" (nullish)
+
+	return 'Media started';
+}
+
+playMedia({
+	name: 'WoW',
+	type: TypesOfMedia.Video,
+	format: FormatsOfMedia.MKV,
+	subtitles: 'hmhmhm hmhmhm doh',
+	marks: ['4:30', '5:40'],
+});
+// ----------------------------------------------------------------//
+// ! Task
