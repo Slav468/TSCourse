@@ -718,10 +718,6 @@ function playMedia(
 ): string {
 	let marksLog: string;
 
-	// Создать функционал, что если marks - это массив, то "сложить" все элементы в одну строку и поместить в marksLog
-	// Если это строка, то просто поместить её в marksLog
-	// Если что-то другое - то marksLog = "Unsupported type of marks"
-	// Не допускайте any!
 	if (Array.isArray(marks)) {
 		marksLog = marks.join(', ');
 	} else if (typeof marks === 'string') {
@@ -733,8 +729,6 @@ function playMedia(
 	console.log(`Media ${name}${format} is ${type}
     Marks: ${marksLog}
     Subtitles: ${subtitles ?? 'none'}`);
-	// помните что это за оператор ??
-	// если нет данных в subtitles, то туда поместится "none" (nullish)
 
 	return 'Media started';
 }
@@ -748,3 +742,29 @@ playMedia({
 });
 // ----------------------------------------------------------------//
 // ! Task
+
+// Утверждение типов (Type assertions)
+const fetchData2 = (url: string, method: 'GET' | 'POST'): void => {
+	console.log('Fetched!');
+};
+
+const reqOptions = {
+	url: 'https://someurl.com',
+	// method: 'GET',
+	method: 'GET' as 'GET',
+}; // as const;
+
+fetchData2('qqq', 'GET');
+fetchData2(reqOptions.url, reqOptions.method);
+
+const box = document.querySelector('.box') as HTMLElement;
+// box.style
+// box?.classList;
+
+const body: HTMLElement = document.body;
+
+// const input = document.querySelector('input') as HTMLInputElement;
+const input = <HTMLInputElement>document.querySelector('input');
+// In React don`t work because thi is fragment jsx
+const someNumber: number = +input.value;
+console.log(someNumber * 2);
