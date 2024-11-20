@@ -743,7 +743,7 @@ playMedia({
 // ----------------------------------------------------------------//
 // ! Task
 
-// Утверждение типов (Type assertions)
+//! Утверждение типов (Type assertions)
 const fetchData2 = (url: string, method: 'GET' | 'POST'): void => {
 	console.log('Fetched!');
 };
@@ -757,14 +757,334 @@ const reqOptions = {
 fetchData2('qqq', 'GET');
 fetchData2(reqOptions.url, reqOptions.method);
 
-const box = document.querySelector('.box') as HTMLElement;
+// const box = document.querySelector('.box') as HTMLElement;
 // box.style
 // box?.classList;
 
-const body: HTMLElement = document.body;
+// const body: HTMLElement = document.body;
 
 // const input = document.querySelector('input') as HTMLInputElement;
-const input = <HTMLInputElement>document.querySelector('input');
+// const input = <HTMLInputElement>document.querySelector('input');
 // In React don`t work because thi is fragment jsx
-const someNumber: number = +input.value;
-console.log(someNumber * 2);
+// const someNumber: number = +input.value;
+// console.log(someNumber * 2);
+
+//! Приведение типов
+
+// * Примитивы
+const num = 5;
+const strNum: string = num.toString();
+const str2: string = '5';
+const bum2: number = Number(str2);
+
+//* Объекты
+
+interface Department {
+	name: string;
+	budget: number;
+}
+
+const department2: Department = {
+	name: 'web-dev',
+	budget: 50_000,
+};
+
+interface Project {
+	name: string;
+	projectBudget: number;
+}
+
+function transformDept(department: Department, amount: number): Project {
+	return {
+		name: department.name,
+		projectBudget: amount,
+	};
+}
+
+const mainProject: Project = transformDept(department2, 100_000);
+console.log(mainProject);
+
+//! Type Guard
+
+// Функция или метод которая определяет тип и возвращает boolean
+function isNumber(n: unknown): n is number {
+	return typeof n === 'number';
+}
+
+console.log(isNumber(num));
+
+interface ICar {
+	name: 'Car';
+	engine: string;
+	wheels: {
+		number: number;
+		type: string;
+	};
+}
+interface IShip {
+	name: 'Ship';
+	engine: string;
+	sail: string;
+}
+
+interface IAirplane {
+	name: 'Airplane';
+	engine: string;
+	wings: string;
+}
+
+interface ISuperAirplane {
+	name: 'Super Airplane';
+	engine: string;
+	wings: string;
+	rocket: string;
+}
+type TTransportName = 'Car' | 'Ship' | 'Airplane' | 'Super Airplane';
+
+//? Разделение Интерфейсов\
+// Bad Practice  лучше разделять на мелкие интерфейсы, для того чтобы не словить баг, если какое-то свойство будет опционально
+interface ITransport {
+	name: TTransportName;
+	engine: string;
+	wheels?: {
+		number: number;
+		type: string;
+	};
+	wings?: string;
+	sail?: string;
+	rocket?: string;
+}
+
+type TVehicle = ICar | IShip | IAirplane | ISuperAirplane;
+
+function repair(vehicle: TVehicle): void {
+	// if (isCar(vehicle)) {
+	// 	vehicle.wheels;
+	// } else if (isShip(vehicle)) {
+	// 	vehicle.sail;
+	// } else {
+	// 	vehicle;
+	// }
+
+	switch (vehicle.name) {
+		case 'Car':
+			vehicle.wheels;
+			break;
+		case 'Ship':
+			vehicle.sail;
+			break;
+		case 'Airplane':
+			vehicle.wings;
+			break;
+		default:
+			//* Never used
+			// Нет кейса Супер самолет и выдаст ошибку, нужно написать еще один кейс с ISuperAirplane
+			// const something: never = vehicle;
+			console.log('Ops!');
+	}
+}
+
+function isCar(car: TVehicle): car is ICar {
+	return (car as ICar).wheels !== undefined;
+	// return 'wheels' in car;
+}
+
+function isShip(ship: TVehicle): ship is IShip {
+	return 'sail' in ship;
+}
+
+//! Function Overload
+
+interface ISquare {
+	side: number;
+	area: number;
+}
+
+interface IRect {
+	a: number;
+	b: number;
+	area: number;
+}
+//? Перегрузка функций записывается до основной функции
+function calculateArea(side: number): ISquare;
+function calculateArea(side: number, b: number): IRect;
+
+function calculateArea(a: number, b?: number): ISquare | IRect {
+	if (b) {
+		const rect: IRect = {
+			a,
+			b,
+			area: a * b,
+		};
+		return rect;
+	} else {
+		const square: ISquare = {
+			side: a,
+			area: a * a,
+		};
+		return square;
+	}
+}
+
+calculateArea(2);
+calculateArea(1, 2);
+
+//! Task
+
+// Request
+// {
+//     animal: 'cat' | 'dog' | 'bird',
+//     breed: string,
+//     sterilized?: string
+// }
+
+// Response #1
+
+// {
+//     status: 'available',
+//     data: {
+//         animal: 'cat' | 'dog' | 'bird',
+//         breed: string,
+//         sterilized?: string,
+//         location: string,
+//         age?: number
+//     }
+// }
+
+// Response #2
+
+// {
+//     status: 'not available',
+//     data: {
+//         message: string,
+//         nextUpdateIn: Date
+//     }
+// }
+
+type TAnimal = 'cat' | 'dog' | 'bird';
+
+enum AnimalStatus {
+	AVAILABLE = 'available',
+	NOT_AVAILABLE = 'not available',
+}
+
+interface IAnimal {
+	animal: TAnimal;
+	breed: string;
+	sterilized?: string;
+	age?: number;
+	location?: string;
+}
+interface IMessage {
+	message: string;
+	nextUpdateIn: Date;
+}
+
+interface IResponse {
+	status: AnimalStatus.AVAILABLE;
+	data: IAnimal;
+}
+
+interface IReject {
+	status: AnimalStatus.NOT_AVAILABLE;
+	data: IMessage;
+}
+
+type Res = IResponse | IReject;
+
+function isAvailable(res: Res): res is IResponse {
+	if (res.status === AnimalStatus.AVAILABLE) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function checkAnimalData(animal: Res): IAnimal | string {
+	if (isAvailable(animal)) {
+		return animal.data;
+	} else {
+		return `${animal.data.message}, you can try in ${animal.data.nextUpdateIn}`;
+	}
+}
+
+//! TASK DOM practice
+
+// Последовательность действий:
+// 1) Происходит submit любой из форм
+// 2) Все данные из 4х полей со страницы переходят в свойства объекта formData
+// 3) Запускается функция validateFormData с этим объектом, возвращает true/false
+// 4) Если на предыдущем этапе true, то запускается функция checkFormData с этим объектом
+
+// const forms = document.querySelectorAll('form');
+// const email = document.querySelector('#email') as HTMLInputElement;
+// const title = document.querySelector('#title') as HTMLInputElement;
+// const text = document.querySelector('#text') as HTMLTextAreaElement;
+// const checkbox = document.querySelector('#checkbox') as HTMLInputElement;
+
+// const formData: IFormData = {
+// 	email: '',
+// 	title: '',
+// 	text: '',
+// 	checkbox: false,
+// };
+
+// interface IFormData {
+// 	email: string;
+// 	title: string;
+// 	text: string;
+// 	checkbox: boolean;
+// }
+
+// for (let form of forms) {
+// 	form.addEventListener('submit', e => {
+// 		e.preventDefault();
+// 		formData.email = email?.value ?? '';
+// 		formData.title = title?.value ?? '';
+// 		formData.text = text?.value ?? '';
+// 		formData.checkbox = checkbox?.checked ?? false;
+// 		if (validateFormData(formData)) {
+// 			checkFormData(formData);
+// 		}
+// 	});
+// }
+
+// function validateFormData(data: IFormData): boolean {
+// 	// Если каждое из свойств объекта правдиво...
+// 	if (Object.values(data).every(value => value)) {
+// 		return true;
+// 	} else {
+// 		console.log('Please, complete all fields');
+// 		return false;
+// 	}
+// }
+
+// function checkFormData(data: IFormData) {
+// 	const { email } = data;
+// 	const emails = ['example@gmail.com', 'example@ex.com', 'admin@gmail.com'];
+
+// 	// Если email совпадает хотя бы с одним из массива
+// 	if (emails.includes(email)) {
+// 		console.log('This email is already exist');
+// 	} else {
+// 		console.log('Posting data...');
+// 	}
+// }
+
+//! Void
+
+type voidCheck = () => void;
+
+const retString: voidCheck = () => {
+	//
+	return 'bla bla bla bla bla bla';
+};
+const s = retString();
+
+console.log(s);
+
+const names = ['Ann', 'John'];
+names.forEach((name, i, arr) => {
+	arr.push('Hey!');
+});
+// Callback ничего не возвращает и принудительно возвращается void
