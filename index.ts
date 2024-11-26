@@ -1088,3 +1088,92 @@ names.forEach((name, i, arr) => {
 	arr.push('Hey!');
 });
 // Callback ничего не возвращает и принудительно возвращается void
+
+//! Generics Обобщенные типы
+/*
+ * Простые Generics обозначаются буквами T U V S P K/V
+ * Сложные Generics ReferralSystem <UserID, User>
+ */
+
+function genericSyntax<T>(data: T): T {
+	return data;
+}
+
+const genericResult = genericSyntax(1);
+const genericResult2 = genericSyntax('1');
+
+const genericNum = 3;
+const genericStr = '3';
+
+const genericResult3 = genericSyntax<number>(genericNum);
+// const genericResult4 = genericSyntax <number>(genericStr); // Error
+
+// Обобщенный интерфейс
+// Generic interface
+interface IPrintES {
+	design: string;
+}
+interface IPrintUK {
+	design: number;
+}
+
+interface IPrint<T> {
+	design: T;
+}
+
+const genericSmth: IPrint<string> = { design: 'Hello' };
+const genericSmth2: IPrint<number> = { design: 10 };
+
+type TGeneric<T> = T;
+const genericNum6: TGeneric<number> = 10;
+
+type TUser<T> = {
+	login: T;
+	age: number;
+};
+
+const genericUser: TUser<string> = {
+	login: 'str',
+	age: 10,
+};
+
+//? Generics helper type
+type TOrNull<Type> = Type | null;
+type TOneOrMany<Type> = Type | Type[];
+
+const manyType: TOneOrMany<string[]> = ['1', '2'];
+
+// Ограничение типов
+interface IParent<ParentsData extends IParentOfUser> {
+	parents: ParentsData;
+	name: string;
+	age: number;
+}
+
+interface IParentOfUser {
+	mother: string;
+	father: string;
+}
+
+const parent2: IParent<{ mother: string; father: string; married: boolean }> = {
+	parents: { mother: 'Ann', father: 'John', married: false },
+	name: 'Ann',
+	age: 10,
+};
+
+const depositMoney = <T extends number | string>(amount: T): T => {
+	console.log('request amount:', amount);
+	return amount;
+};
+
+depositMoney(500);
+depositMoney('500');
+// depositMoney(false); //error
+
+// const depositMoney = (amount: number | string): number | string => {
+// 	console.log('request amount:', amount);
+// 	return amount;
+// };
+
+// depositMoney(500);
+// depositMoney("500");
