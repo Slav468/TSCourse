@@ -1177,3 +1177,193 @@ depositMoney('500');
 
 // depositMoney(500);
 // depositMoney("500");
+
+//! Task
+
+// Создать Generic-интерфейс PlayerData, который подходил бы для создания таких объектов:
+interface IHours {
+	total: number;
+	inMenu: number;
+}
+
+interface IPlayerData<Game, THours> {
+	game: Game;
+	hours: THours;
+	server: string;
+}
+type TGame = string | number;
+type THours = number | string | IHours;
+
+const player1: IPlayerData<TGame, THours> = {
+	game: 'CS:GO',
+	hours: 300,
+	server: 'basic',
+};
+
+const player2: IPlayerData<TGame, THours> = {
+	game: 2048,
+	hours: '300 h.',
+	server: 'arcade',
+};
+
+const player3: IPlayerData<TGame, THours> = {
+	game: 'Chess',
+	hours: {
+		total: 500,
+		inMenu: 50,
+	},
+	server: 'chess',
+};
+
+// Массив данных с фигурами содержит объекты, у каждого из которых обязательно есть свойство name
+// Каждый объект может еще содержать дополнительные свойства в случайном виде
+// Свойство name может иметь только 4 варианта
+// Функция calculateAmountOfFigures должна принимать массив с объектами, у которых обязательно должно быть свойство name
+// Возвращает она объект-экземпляр AmountOfFigures
+// Внутри себя подсчитывает сколько каких фигур было в массиве и записывает результаты в AmountOfFigures
+// С текущими данными в консоль должно попадать:
+// { squares: 3, circles: 2, triangles: 2, others: 1 }
+
+enum FigureNames {
+	RECT = 'rect',
+	TRIANGLE = 'triangle',
+	CIRCLE = 'circle',
+	LINE = 'line',
+}
+
+interface IFigure {
+	name: string;
+	data?: IDataOfFigure;
+}
+interface IDataOfFigure {
+	a?: number;
+	b?: number;
+	c?: number;
+	r?: number;
+	l?: number;
+}
+
+interface AmountOfFigures {
+	squares: number;
+	circles: number;
+	triangles: number;
+	others: number;
+}
+
+/**
+ * Function takes an array of objects with shape name and optional data property
+ * and returns an object with the amount of each shape
+ * @param figure - array of figures
+ * @returns an object with the amount of each shape
+ */
+function calculateAmountOfFigures<T extends IFigure>(
+	figure: T[]
+): AmountOfFigures {
+	/**
+	 * Initialize an object with initial amount of each shape as 0
+	 */
+	const amount: AmountOfFigures = {
+		squares: 0,
+		circles: 0,
+		triangles: 0,
+		others: 0,
+	};
+
+	/**
+	 * Loop through each figure and increase the count of the corresponding shape
+	 */
+	for (let fig of figure) {
+		switch (fig.name) {
+			case FigureNames.RECT:
+				amount.squares += 1;
+				break;
+			case FigureNames.TRIANGLE:
+				amount.triangles += 1;
+				break;
+			case FigureNames.CIRCLE:
+				amount.circles += 1;
+				break;
+			default:
+				amount.others += 1;
+				break;
+		}
+	}
+
+	/**
+	 * Return the object with the amount of each shape
+	 */
+	return amount;
+}
+
+const dataFigures: IFigure[] = [
+	{
+		name: 'rect',
+		data: { a: 5, b: 10 },
+	},
+	{
+		name: 'rect',
+		data: { a: 6, b: 11 },
+	},
+	{
+		name: 'triangle',
+		data: { a: 5, b: 10, c: 14 },
+	},
+	{
+		name: 'line',
+		data: { l: 15 },
+	},
+	{
+		name: 'circle',
+		data: { r: 10 },
+	},
+	{
+		name: 'circle',
+		data: { r: 5 },
+	},
+	{
+		name: 'rect',
+		data: { a: 15, b: 7 },
+	},
+	{
+		name: 'triangle',
+	},
+];
+
+console.log(calculateAmountOfFigures(dataFigures));
+
+//! Class Generics
+
+class User<T, S> {
+	name: T;
+	age: S;
+	constructor(name: T, age: S) {
+		this.name = name;
+		this.age = age;
+	}
+	sayMyName<T>(surname: T): string {
+		if (typeof surname !== 'string') {
+			return `I have only ${surname}`;
+		} else {
+			return `My name is ${this.name} ${surname}`;
+		}
+	}
+}
+
+const nameStr = 'Sergey';
+const ageNum = 30;
+const user = new User<string, number>(nameStr, ageNum);
+console.log(user.sayMyName('Sckaromnick'));
+
+const user2 = new User('Sergey', 30);
+
+class AdminUser<T> extends User<string, number> {
+	rules: T;
+
+	constructor(name: string, age: number, rules: T) {
+		super(name, age);
+		this.rules = rules;
+	}
+}
+
+const ADMIN = new AdminUser('Sergey', 30, 'read');
+console.log(ADMIN);
