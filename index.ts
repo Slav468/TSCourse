@@ -1332,7 +1332,6 @@ const dataFigures: IFigure[] = [
 console.log(calculateAmountOfFigures(dataFigures));
 
 //! Class Generics
-
 class User<T, S> {
 	name: T;
 	age: S;
@@ -1367,3 +1366,57 @@ class AdminUser<T> extends User<string, number> {
 
 const ADMIN = new AdminUser('Sergey', 30, 'read');
 console.log(ADMIN);
+
+//! Readonly, Partial, Required
+
+const arrArray: Array<string> = [];
+const arrArray2: string[] = [];
+
+const roArray: ReadonlyArray<string> = [
+	'str',
+	'str',
+	'str',
+	'str',
+	'str',
+	'str',
+];
+
+// Readonly
+//* запрещает изменять
+
+//? not change array
+// roArray[0] = 'str2';
+
+interface IState {
+	data: {
+		name: string;
+	};
+	tag: string;
+}
+
+// Partial
+// * все свойства становятся необязательными (так если бы стоял знак "?")
+
+const state: Partial<IState> = {
+	data: {
+		name: 'John',
+	},
+};
+
+// Required
+// * все свойства становятся обязательными (удаляет все знаки "?" у свойств)
+
+const strictState : Required<IState> = {
+	data: {
+		name: 'John',
+	},
+	// need add tag
+	tag: 'tag',
+};
+
+function action(state: Readonly<IState>) {
+	// state.data = state.data
+	// верхний уровень менять екльзя, только чтение, для боле глубокого запрета существуют другие сущности
+	state.data.name = 'data';
+	// более глубокое изменение возможно
+}
