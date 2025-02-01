@@ -1406,7 +1406,7 @@ const state: Partial<IState> = {
 // Required
 // * все свойства становятся обязательными (удаляет все знаки "?" у свойств)
 
-const strictState : Required<IState> = {
+const strictState: Required<IState> = {
 	data: {
 		name: 'John',
 	},
@@ -1416,7 +1416,153 @@ const strictState : Required<IState> = {
 
 function action(state: Readonly<IState>) {
 	// state.data = state.data
-	// верхний уровень менять екльзя, только чтение, для боле глубокого запрета существуют другие сущности
+	// верхний уровень менять нельзя, только чтение, для боле глубокого запрета существуют другие сущности
 	state.data.name = 'data';
 	// более глубокое изменение возможно
 }
+
+// ! Keyof
+//* keyof - принимает на вход интерфейс и возвращает ключи этого интерфейса и образует Union тип между литералами свойств
+
+interface ICompany {
+	name: string;
+	debts: number;
+	open: string;
+	department: IDepartment[];
+	management: {
+		owner: string;
+	};
+}
+
+interface IDepartment {
+	[key: string]: string;
+}
+
+type TCompanyKeys = keyof ICompany;
+const keys: TCompanyKeys = 'debts';
+
+function printDebts<T>(company: T, name: keyof T, debts: keyof T): void {
+	console.log(`Company ${company[name]} has debts ${company[debts]}`);
+}
+
+// const hh: ICompany = {
+// 	name: 'hh',
+// 	debts: 1000,
+// };
+
+// printDebts(hh, 'name', 'debts');
+
+const google = {
+	name: 'google',
+	open: 'true',
+	debts: 5000,
+	department: {
+		sales: 'sales',
+		development: 'development',
+	},
+	management: {
+		owner: 'John',
+	},
+};
+
+printDebts(google, 'name', 'open');
+
+// ! Typeof
+
+type TGoogleKeys = keyof typeof google;
+const keys2: TGoogleKeys = 'name';
+
+//! Indexed Access Types
+//* получение типа
+
+// Нельзя так мы обращаемся к типу, который определяет получаемый тип, а не к объекту с находящимся в нем типом
+// type TCompanyDebtsType = typeof ICompany.debts;
+// const debts = 'debts';
+// let debts = 'debts' as "debts";
+let debts: 'debts' = 'debts';
+//* доступ к полю типа
+type TCompanyDebtsType = ICompany[typeof debts];
+// type TCompanyDebtsType = ICompany['debts'];
+type TCompanyOwnerType = ICompany['management']['owner'];
+// type TCompanyDepartmentsType = ICompany['department']['development'];
+type TCompanyDepartmentsTypes = ICompany['department'][number];
+type TTest = ICompany[keyof ICompany];
+
+//! Task
+
+interface IPhone {
+	company: string;
+	number: number;
+}
+
+// IMobilePhone должен наследоваться от IPhone,
+// тип свойства companyPartner зависит от свойства company
+
+type TIPhoneCompanyType = IMobilePhone['company'];
+
+interface IMobilePhone extends IPhone {
+	size: string;
+	companyPartner: TIPhoneCompanyType;
+	manufactured: Date;
+}
+
+// Типизировать объект phones
+
+const phones: IMobilePhone[] = [
+	{
+		company: 'Nokia',
+		number: 1285637,
+		size: '5.5',
+		companyPartner: 'MobileNokia',
+		manufactured: new Date('2022-09-01'),
+	},
+	{
+		company: 'Samsung',
+		number: 4356637,
+		size: '5.0',
+		companyPartner: 'SamMobile',
+		manufactured: new Date('2021-11-05'),
+	},
+	{
+		company: 'Apple',
+		number: 4552833,
+		size: '5.7',
+		companyPartner: 'no data',
+		manufactured: new Date('2022-05-24T12:00:00'),
+	},
+];
+
+interface IPhonesManufacturedAfterDate extends IMobilePhone {
+	initialDate: string;
+}
+
+// Функция должна отфильтровать массив данных и вернуть новый массив
+// с телефонами, выпущенными после даты в третьем аргументе
+
+type TIMobilePhoneKeyType = keyof IMobilePhone;
+
+function filterPhonesByDate<T extends IMobilePhone>(
+	phones: T[],
+	key: TIMobilePhoneKeyType,
+	initial: string
+): IPhonesManufacturedAfterDate[] {
+	return phones
+		.filter(phone => {
+			const manufactured = phone[key];
+			if (
+				manufactured instanceof Date &&
+				manufactured.getTime() > new Date(initial).getTime()
+			) {
+				return phone;
+			}
+		})
+		.map(phone => {
+			const newObj = { ...phone, initialDate: initial };
+			return newObj;
+		});
+}
+
+// Второй аргумент при вызове функции должен быть связан с первым,
+// а значит мы получим подсказки - свойства этого объекта
+
+console.log(filterPhonesByDate(phones, 'manufactured', '2022-01-01'));
