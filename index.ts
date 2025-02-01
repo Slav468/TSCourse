@@ -1566,3 +1566,353 @@ function filterPhonesByDate<T extends IMobilePhone>(
 // а значит мы получим подсказки - свойства этого объекта
 
 console.log(filterPhonesByDate(phones, 'manufactured', '2022-01-01'));
+
+//! Conditional Types, infer
+// условные типы
+
+// Conditions ? true : false
+// someType extends otherType ? true : false
+
+type TExample = 'string' extends 'Hello' ? string : number;
+const str3 = 'Hello';
+type TExample2 = 'string' extends typeof str3 ? string : number;
+
+type FromUserOrFromBase<T extends string | number> = T extends string
+	? IDataFromUser
+	: IDataFromBase;
+
+interface IUser<T extends 'created' | Date> {
+	created: T extends 'created' ? 'created' : Date;
+}
+
+const user3: IUser<'created'> = {
+	created: 'created',
+};
+
+interface IDataFromUser {
+	weights: string;
+}
+
+interface IDataFromBase {
+	calories: number;
+}
+
+function calculateDailyCalories(str: string): IDataFromUser;
+function calculateDailyCalories(num: number): IDataFromBase;
+// function calculateDailyCalories(
+// 	numOrString: number | string
+// ): IDataFromUser | IDataFromBase {
+// 	if (typeof numOrString === 'string') {
+// 		const obj: IDataFromUser = { weights: numOrString };
+// 		return obj;
+// 	}
+// 	const obj: IDataFromBase = { calories: numOrString };
+// 	return obj;
+// }
+
+function calculateDailyCalories<T extends number | string>(
+	numOrString: T
+): T extends string ? IDataFromUser : IDataFromBase {
+	if (typeof numOrString === 'string') {
+		const obj: IDataFromUser = { weights: numOrString };
+		// return obj as T extends string ? IDataFromUser : IDataFromBase;
+		return obj as FromUserOrFromBase<T>;
+	}
+	const obj: IDataFromBase = { calories: numOrString };
+	// return obj as T extends string ? IDataFromUser : IDataFromBase;
+	return obj as FromUserOrFromBase<T>;
+}
+
+type GetStringType<T extends 'hello' | 'world' | string> = T extends 'hello'
+	? 'hello'
+	: T extends 'world'
+	? 'world'
+	: string;
+
+type GetFirstType<T> = T extends Array<infer First> ? First : T;
+
+type Ex = GetFirstType<number>;
+type Ex2 = GetFirstType<number[]>;
+
+type ToArray<Type> = Type extends any ? Type[] : never;
+type ExArray = ToArray<Ex | string>;
+
+//! Mapped types, +/- операторы
+//* Используются только TYPES
+type Currencies = {
+	usa: 'usd';
+	china?: 'cny';
+	germany: 'euro';
+	readonly kz: 'tenge';
+	ukraine: 'uah';
+};
+
+type CreateCustomCurr<T> = {
+	// readonly [Key in keyof T]: string;
+	// [Key in keyof T]?: string;
+	-readonly [Key in keyof T]+?: string;
+};
+
+type CustomCurr2 = CreateCustomCurr<Currencies>;
+
+// type СопоставимыйТип = {
+// 	[произвольныйАйДи in Множество]: Произвольный тип данных
+// }
+
+type Keys = 'name' | 'age' | 'email' | 'password';
+type User2 = {
+	[key in Keys]: string;
+};
+
+const alex: User2 = {
+	name: 'Alex',
+	age: '30',
+	email: '5HtBb@example.com',
+	password: '123456',
+};
+
+// ! Template literal types
+
+type MyAnimation = 'fade' | 'swipe';
+type Directions = 'in' | 'out';
+type MyAnimation2 = `${MyAnimation}${Capitalize<Directions>}`;
+
+type CreateCustomCurr3<T> = {
+	[Key in keyof T as `custom${Capitalize<string & Key>}`]: string;
+};
+
+type CustomCurr3 = CreateCustomCurr3<Currencies>;
+
+//! Utility types: Pick, Omit, Extract, Exclude, Record, ReturnType, Parameters, ConstructorParameters
+// Исключение Omit
+type CurrWithoutKz = Omit<Currencies, 'kz'>;
+// Фильтрация по свойствам Pick
+type CurrUsaAndUk = Pick<Currencies, 'usa' | 'ukraine'>;
+// Удаление из Union Type Exclude
+type FadeType = Exclude<MyAnimation, 'swipe'>;
+type CountriesWithoutChina = Exclude<keyof Currencies, 'china'>;
+// Добавляем только подходящий тип Extract
+type SwipeType = Extract<MyAnimation, 'swipe'>;
+// Создание нового типа в формате ключ:значение Record
+type PlayersName = 'alex' | 'mike';
+type GameDataCurr = Record<PlayersName, CustomCurr3>;
+
+const gameData: GameDataCurr = {
+	alex: {
+		customUsa: 'string',
+		customChina: 'string',
+		customGermany: 'string',
+		customKz: 'string',
+		customUkraine: 'string',
+	},
+	mike: {
+		customUsa: 'string',
+		customChina: 'string',
+		customGermany: 'string',
+		customKz: 'string',
+		customUkraine: 'string',
+	},
+};
+
+function calculate(a: number, b: number): number {
+	return a * b;
+}
+// Получение типа возвращаемого функцией объекта
+type TCalculateRT = ReturnType<typeof calculate>;
+// Получение типа аргументов функции
+type TCalculateParamType = Parameters<typeof calculate>;
+type PT1 = Parameters<(a: number) => number>;
+type PT2 = Parameters<<T>(arg: T) => T>;
+
+// Получение типа аргументов класса
+class Example {
+	constructor(a: number, b: number) {
+		a = a;
+		b = b;
+	}
+}
+
+type T0 = ConstructorParameters<typeof Example>;
+
+//! Task 1
+
+// Необходимо типизировать этот большой объект
+// Свойство futureClasses должно быть в зависимости от classes по типу
+// Свойства exClients и futureClients тоже должны быть в зависимости от currClients
+// ИЛИ все три зависят от общего родителя
+
+// Простыми словами: при добавлении свойства в целевой объект они должны быть
+// автоматически добавлены в зависимые (сразу подсказка от TS)
+
+interface IFitnessClubCenter {
+	clubName: string;
+	location: string;
+}
+
+interface IFitnessClasses {
+	name: string;
+	startsAt: string;
+	willStartsAt: string;
+	duration: number;
+}
+
+type TFitnessClasses = Omit<IFitnessClasses, 'willStartsAt'>;
+type TFitnessFutureClasses = Omit<IFitnessClasses, 'startsAt'>;
+
+interface IFitnessClients {
+	name: string;
+	age: number | string;
+	gender: 'male' | 'female';
+	timeLeft: string;
+	makeCallFor: Date;
+}
+
+type TCurrentClient = Omit<IFitnessClients, 'makeCallFor'>;
+type TExClient = Omit<IFitnessClients, 'timeLeft'>;
+type TFutureClients = Pick<IFitnessClients, 'name' | 'makeCallFor'>;
+
+interface IFitnessClub {
+	clubName: string;
+	location: string;
+	classes: TFitnessClasses[];
+	futureClasses: TFitnessFutureClasses[];
+	currClients: TCurrentClient[];
+	exClients: TExClient[];
+	futureClients: TFutureClients[];
+}
+
+const fitnessClubCenter: IFitnessClub = {
+	clubName: 'Fitness club Center',
+	location: 'central ave. 45, 5th floor',
+	classes: [
+		{
+			name: 'yoga',
+			startsAt: '8:00 AM',
+			duration: 60,
+		},
+		{
+			name: 'trx',
+			startsAt: '11:00 AM',
+			duration: 45,
+		},
+		{
+			name: 'swimming',
+			startsAt: '3:00 PM',
+			duration: 70,
+		},
+	],
+	futureClasses: [
+		{
+			name: 'boxing',
+			willStartsAt: '6:00 PM',
+			duration: 40,
+		},
+		{
+			name: 'breath training',
+			willStartsAt: '8:00 PM',
+			duration: 30,
+		},
+	],
+	currClients: [
+		{
+			name: 'John Smith',
+			age: '-',
+			gender: 'male',
+			timeLeft: '1 month',
+		},
+		{
+			name: 'Alise Smith',
+			age: 35,
+			gender: 'female',
+			timeLeft: '3 month',
+		},
+		{
+			name: 'Ann Sonne',
+			age: 24,
+			gender: 'female',
+			timeLeft: '5 month',
+		},
+	],
+	exClients: [
+		{
+			name: 'Tom Smooth',
+			age: 50,
+			gender: 'male',
+			makeCallFor: new Date('2023-08-12'),
+		},
+	],
+	futureClients: [
+		{
+			name: 'Maria',
+			makeCallFor: new Date('2023-07-10'),
+		},
+	],
+};
+
+// ! Task 2
+
+interface ISlider {
+	container?: string;
+	numberOfSlides?: number;
+	speed?: 300 | 500 | 700;
+	direction?: 'horizontal' | 'vertical';
+	dots?: boolean;
+	arrows?: boolean;
+	animationName?: string;
+}
+
+function createSlider({
+	container = '',
+	numberOfSlides = 1,
+	speed = 300,
+	direction = 'horizontal',
+	dots = true,
+	arrows = true,
+}: ISlider = {}): void {
+	console.log(container, numberOfSlides, speed, direction, dots, arrows);
+}
+
+createSlider();
+
+// Необходимо типизировать объект настроек, который будет зависим
+// от интерфейса ISlider
+// Все поля в нем обязательны для заполнения
+
+type TCustomSliderBase = Required<Omit<ISlider, 'animationName' | 'speed'>>;
+interface ICustomSlider extends TCustomSliderBase {
+	speed: number;
+}
+const customSliderOptions: ICustomSlider = {
+	container: 'id',
+	numberOfSlides: 4,
+	speed: 1100,
+	direction: 'horizontal',
+	dots: true,
+	arrows: true,
+};
+
+function createCustomSlider(options: ICustomSlider): void {
+	if ('container' in options) {
+		console.log(options);
+	}
+}
+
+//! TAsk 3
+
+interface IForm {
+	login: string;
+	password: string;
+}
+
+// Необходимо типизировать объект валидации
+// Учтите, что данные в форме могут расширяться и эти поля
+// должны появиться и в объекте валидации
+
+type TValidateForm<T> = {
+	[key in keyof T]: { isValid: true } | { isValid: false; errorMsg: string };
+};
+
+const validationData: TValidateForm<IForm> = {
+	login: { isValid: false, errorMsg: 'At least 3 characters' },
+	password: { isValid: true },
+};
