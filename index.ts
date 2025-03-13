@@ -1980,3 +1980,15 @@ type PFetchDataReturnType = PUnwrappedPromise<
 
 type Smth = Awaited<boolean | Promise<number>>;
 // boolean | number
+
+//! Class
+
+class Box {
+	width: number;
+	height: number;
+
+	constructor(width: number, height: number) {
+		this.width = width;
+		this.height = height;
+	}
+}
