@@ -1,3 +1,29 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var _a;
 var str = 'str';
 console.log(str);
@@ -634,14 +660,27 @@ var FigureNames;
     FigureNames["CIRCLE"] = "circle";
     FigureNames["LINE"] = "line";
 })(FigureNames || (FigureNames = {}));
+/**
+ * Function takes an array of objects with shape name and optional data property
+ * and returns an object with the amount of each shape
+ * @param figure - array of figures
+ * @returns an object with the amount of each shape
+ */
 function calculateAmountOfFigures(figure) {
+    /**
+     * Initialize an object with initial amount of each shape as 0
+     */
     var amount = {
         squares: 0,
         circles: 0,
         triangles: 0,
         others: 0,
     };
-    figure.forEach(function (fig) {
+    /**
+     * Loop through each figure and increase the count of the corresponding shape
+     */
+    for (var _i = 0, figure_1 = figure; _i < figure_1.length; _i++) {
+        var fig = figure_1[_i];
         switch (fig.name) {
             case FigureNames.RECT:
                 amount.squares += 1;
@@ -656,7 +695,10 @@ function calculateAmountOfFigures(figure) {
                 amount.others += 1;
                 break;
         }
-    });
+    }
+    /**
+     * Return the object with the amount of each shape
+     */
     return amount;
 }
 var dataFigures = [
@@ -693,3 +735,311 @@ var dataFigures = [
     },
 ];
 console.log(calculateAmountOfFigures(dataFigures));
+//! Class Generics
+var User = /** @class */ (function () {
+    function User(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+    User.prototype.sayMyName = function (surname) {
+        if (typeof surname !== 'string') {
+            return "I have only ".concat(surname);
+        }
+        else {
+            return "My name is ".concat(this.name, " ").concat(surname);
+        }
+    };
+    return User;
+}());
+var nameStr = 'Sergey';
+var ageNum = 30;
+var user = new User(nameStr, ageNum);
+console.log(user.sayMyName('Sckaromnick'));
+var user2 = new User('Sergey', 30);
+var AdminUser = /** @class */ (function (_super) {
+    __extends(AdminUser, _super);
+    function AdminUser(name, age, rules) {
+        var _this = _super.call(this, name, age) || this;
+        _this.rules = rules;
+        return _this;
+    }
+    return AdminUser;
+}(User));
+var ADMIN = new AdminUser('Sergey', 30, 'read');
+console.log(ADMIN);
+//! Readonly, Partial, Required
+var arrArray = [];
+var arrArray2 = [];
+var roArray = [
+    'str',
+    'str',
+    'str',
+    'str',
+    'str',
+    'str',
+];
+// Partial
+// * все свойства становятся необязательными (так если бы стоял знак "?")
+var state = {
+    data: {
+        name: 'John',
+    },
+};
+// Required
+// * все свойства становятся обязательными (удаляет все знаки "?" у свойств)
+var strictState = {
+    data: {
+        name: 'John',
+    },
+    // need add tag
+    tag: 'tag',
+};
+function action(state) {
+    // state.data = state.data
+    // верхний уровень менять нельзя, только чтение, для боле глубокого запрета существуют другие сущности
+    state.data.name = 'data';
+    // более глубокое изменение возможно
+}
+var keys = 'debts';
+function printDebts(company, name, debts) {
+    console.log("Company ".concat(company[name], " has debts ").concat(company[debts]));
+}
+// const hh: ICompany = {
+// 	name: 'hh',
+// 	debts: 1000,
+// };
+// printDebts(hh, 'name', 'debts');
+var google = {
+    name: 'google',
+    open: 'true',
+    debts: 5000,
+    department: {
+        sales: 'sales',
+        development: 'development',
+    },
+    management: {
+        owner: 'John',
+    },
+};
+printDebts(google, 'name', 'open');
+var keys2 = 'name';
+//! Indexed Access Types
+//* получение типа
+// Нельзя так мы обращаемся к типу, который определяет получаемый тип, а не к объекту с находящимся в нем типом
+// type TCompanyDebtsType = typeof ICompany.debts;
+// const debts = 'debts';
+// let debts = 'debts' as "debts";
+var debts = 'debts';
+// Типизировать объект phones
+var phones = [
+    {
+        company: 'Nokia',
+        number: 1285637,
+        size: '5.5',
+        companyPartner: 'MobileNokia',
+        manufactured: new Date('2022-09-01'),
+    },
+    {
+        company: 'Samsung',
+        number: 4356637,
+        size: '5.0',
+        companyPartner: 'SamMobile',
+        manufactured: new Date('2021-11-05'),
+    },
+    {
+        company: 'Apple',
+        number: 4552833,
+        size: '5.7',
+        companyPartner: 'no data',
+        manufactured: new Date('2022-05-24T12:00:00'),
+    },
+];
+function filterPhonesByDate(phones, key, initial) {
+    return phones
+        .filter(function (phone) {
+        var manufactured = phone[key];
+        if (manufactured instanceof Date &&
+            manufactured.getTime() > new Date(initial).getTime()) {
+            return phone;
+        }
+    })
+        .map(function (phone) {
+        var newObj = __assign(__assign({}, phone), { initialDate: initial });
+        return newObj;
+    });
+}
+// Второй аргумент при вызове функции должен быть связан с первым,
+// а значит мы получим подсказки - свойства этого объекта
+console.log(filterPhonesByDate(phones, 'manufactured', '2022-01-01'));
+var str3 = 'Hello';
+var user3 = {
+    created: 'created',
+};
+// function calculateDailyCalories(
+// 	numOrString: number | string
+// ): IDataFromUser | IDataFromBase {
+// 	if (typeof numOrString === 'string') {
+// 		const obj: IDataFromUser = { weights: numOrString };
+// 		return obj;
+// 	}
+// 	const obj: IDataFromBase = { calories: numOrString };
+// 	return obj;
+// }
+function calculateDailyCalories(numOrString) {
+    if (typeof numOrString === 'string') {
+        var obj_1 = { weights: numOrString };
+        // return obj as T extends string ? IDataFromUser : IDataFromBase;
+        return obj_1;
+    }
+    var obj = { calories: numOrString };
+    // return obj as T extends string ? IDataFromUser : IDataFromBase;
+    return obj;
+}
+var alex = {
+    name: 'Alex',
+    age: '30',
+    email: '5HtBb@example.com',
+    password: '123456',
+};
+var gameData = {
+    alex: {
+        customUsa: 'string',
+        customChina: 'string',
+        customGermany: 'string',
+        customKz: 'string',
+        customUkraine: 'string',
+    },
+    mike: {
+        customUsa: 'string',
+        customChina: 'string',
+        customGermany: 'string',
+        customKz: 'string',
+        customUkraine: 'string',
+    },
+};
+function calculate(a, b) {
+    return a * b;
+}
+// Получение типа аргументов класса
+var Example = /** @class */ (function () {
+    function Example(a, b) {
+        a = a;
+        b = b;
+    }
+    return Example;
+}());
+var fitnessClubCenter = {
+    clubName: 'Fitness club Center',
+    location: 'central ave. 45, 5th floor',
+    classes: [
+        {
+            name: 'yoga',
+            startsAt: '8:00 AM',
+            duration: 60,
+        },
+        {
+            name: 'trx',
+            startsAt: '11:00 AM',
+            duration: 45,
+        },
+        {
+            name: 'swimming',
+            startsAt: '3:00 PM',
+            duration: 70,
+        },
+    ],
+    futureClasses: [
+        {
+            name: 'boxing',
+            willStartsAt: '6:00 PM',
+            duration: 40,
+        },
+        {
+            name: 'breath training',
+            willStartsAt: '8:00 PM',
+            duration: 30,
+        },
+    ],
+    currClients: [
+        {
+            name: 'John Smith',
+            age: '-',
+            gender: 'male',
+            timeLeft: '1 month',
+        },
+        {
+            name: 'Alise Smith',
+            age: 35,
+            gender: 'female',
+            timeLeft: '3 month',
+        },
+        {
+            name: 'Ann Sonne',
+            age: 24,
+            gender: 'female',
+            timeLeft: '5 month',
+        },
+    ],
+    exClients: [
+        {
+            name: 'Tom Smooth',
+            age: 50,
+            gender: 'male',
+            makeCallFor: new Date('2023-08-12'),
+        },
+    ],
+    futureClients: [
+        {
+            name: 'Maria',
+            makeCallFor: new Date('2023-07-10'),
+        },
+    ],
+};
+function createSlider(_a) {
+    var _b = _a === void 0 ? {} : _a, _c = _b.container, container = _c === void 0 ? '' : _c, _d = _b.numberOfSlides, numberOfSlides = _d === void 0 ? 1 : _d, _e = _b.speed, speed = _e === void 0 ? 300 : _e, _f = _b.direction, direction = _f === void 0 ? 'horizontal' : _f, _g = _b.dots, dots = _g === void 0 ? true : _g, _h = _b.arrows, arrows = _h === void 0 ? true : _h;
+    console.log(container, numberOfSlides, speed, direction, dots, arrows);
+}
+createSlider();
+var customSliderOptions = {
+    container: 'id',
+    numberOfSlides: 4,
+    speed: 1100,
+    direction: 'horizontal',
+    dots: true,
+    arrows: true,
+};
+function createCustomSlider(options) {
+    if ('container' in options) {
+        console.log(options);
+    }
+}
+var validationData = {
+    login: { isValid: false, errorMsg: 'At least 3 characters' },
+    password: { isValid: true },
+};
+//! work with AJAX (Promise, async/await, fetching)
+var jsonTest = '{"name" : "Test", "data" : "4"}';
+var objFromJson = JSON.parse(jsonTest);
+var toDoLIst = [];
+// fetch('https://jsonplaceholder.typicode.com/todos/1')
+// 	.then(response => response.json())
+// 	.then(json => {
+// 		if ('id' in json) {
+// 			toDoLIst.push(json);
+// 		}
+// 		console.log(toDoLIst);
+// 	});
+fetch('https://jsonplaceholder.typicode.com/todos')
+    .then(function (response) { return response.json(); })
+    .then(function (json) {
+    if ('id' in json) {
+        toDoLIst.push(json);
+    }
+    else if (Array.isArray(json)) {
+        toDoLIst = json;
+    }
+    else {
+        console.log("".concat(json, " is a string"));
+    }
+    console.log(toDoLIst);
+});

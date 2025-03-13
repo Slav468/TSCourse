@@ -1916,3 +1916,67 @@ const validationData: TValidateForm<IForm> = {
 	login: { isValid: false, errorMsg: 'At least 3 characters' },
 	password: { isValid: true },
 };
+
+//! work with AJAX (Promise, async/await, fetching)
+// 1. Нельзя зааннотировать все
+// 2. проводим базовые проверки по типу Array.isArray(), typeof, instanceof с готовым результатом (сужение типов)
+// 3. аннотации не будут лишними (для понимания, что мы ожидаем в выводе и почему проводим конкретные проверки из п.2)
+
+const jsonTest = '{"name" : "Test", "data" : "4"}';
+const objFromJson = JSON.parse(jsonTest);
+
+let toDoLIst: ITodo[] = [];
+
+interface ITodo {
+	userId: number;
+	id: number;
+	title: string;
+	completed: boolean;
+}
+
+fetch('https://jsonplaceholder.typicode.com/todos')
+	.then(response => response.json())
+	.then(json => {
+		if ('id' in json) {
+			toDoLIst.push(json);
+		} else if (Array.isArray(json)) {
+			toDoLIst = json;
+		} else {
+			console.log(`${json} is a string`);
+		}
+
+		console.log(toDoLIst);
+	});
+
+//? Promise это дженерик поэтому передаем ему тип сущности с которой работаем (string, number)
+const promise = new Promise<string>((resolve, reject) => {
+	resolve('string');
+});
+promise.then(value => {
+	console.log(value.toLowerCase());
+});
+
+// Awaited promise аннотирует ожидаемый результат от промиса
+type FromPromise = Awaited<Promise<Promise<number>>>;
+
+interface IUserAwait {
+	name: string;
+}
+
+async function fetchUsersName(): Promise<IUserAwait[]> {
+	const users: IUserAwait[] = [{ name: 'John' }];
+	return users;
+}
+
+const users = fetchUsersName();
+//? ReturnType - возвращает тип возвращаемого значения функции
+type PFetchUsersType = Awaited<ReturnType<typeof fetchUsersName>>;
+
+//? до стандарта TS 4.5
+type PUnwrappedPromise<T> = T extends Promise<infer Return> ? Return : T;
+type PFetchDataReturnType = PUnwrappedPromise<
+	ReturnType<typeof fetchUsersName>
+>;
+
+type Smth = Awaited<boolean | Promise<number>>;
+// boolean | number
