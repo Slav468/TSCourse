@@ -1934,51 +1934,51 @@ interface ITodo {
 	completed: boolean;
 }
 
-fetch('https://jsonplaceholder.typicode.com/todos')
-	.then(response => response.json())
-	.then(json => {
-		if ('id' in json) {
-			toDoLIst.push(json);
-		} else if (Array.isArray(json)) {
-			toDoLIst = json;
-		} else {
-			console.log(`${json} is a string`);
-		}
+// fetch('https://jsonplaceholder.typicode.com/todos')
+// 	.then(response => response.json())
+// 	.then(json => {
+// 		if ('id' in json) {
+// 			toDoLIst.push(json);
+// 		} else if (Array.isArray(json)) {
+// 			toDoLIst = json;
+// 		} else {
+// 			console.log(`${json} is a string`);
+// 		}
 
-		console.log(toDoLIst);
-	});
+// 		console.log(toDoLIst);
+// 	});
 
 //? Promise это дженерик поэтому передаем ему тип сущности с которой работаем (string, number)
-const promise = new Promise<string>((resolve, reject) => {
-	resolve('string');
-});
-promise.then(value => {
-	console.log(value.toLowerCase());
-});
+// const promise = new Promise<string>((resolve, reject) => {
+// 	resolve('string');
+// });
+// promise.then(value => {
+// 	console.log(value.toLowerCase());
+// });
 
 // Awaited promise аннотирует ожидаемый результат от промиса
-type FromPromise = Awaited<Promise<Promise<number>>>;
+// type FromPromise = Awaited<Promise<Promise<number>>>;
 
-interface IUserAwait {
-	name: string;
-}
+// interface IUserAwait {
+// 	name: string;
+// }
 
-async function fetchUsersName(): Promise<IUserAwait[]> {
-	const users: IUserAwait[] = [{ name: 'John' }];
-	return users;
-}
+// async function fetchUsersName(): Promise<IUserAwait[]> {
+// 	const users: IUserAwait[] = [{ name: 'John' }];
+// 	return users;
+// }
 
-const users = fetchUsersName();
-//? ReturnType - возвращает тип возвращаемого значения функции
-type PFetchUsersType = Awaited<ReturnType<typeof fetchUsersName>>;
+// const users = fetchUsersName();
+// //? ReturnType - возвращает тип возвращаемого значения функции
+// type PFetchUsersType = Awaited<ReturnType<typeof fetchUsersName>>;
 
-//? до стандарта TS 4.5
-type PUnwrappedPromise<T> = T extends Promise<infer Return> ? Return : T;
-type PFetchDataReturnType = PUnwrappedPromise<
-	ReturnType<typeof fetchUsersName>
->;
+// //? до стандарта TS 4.5
+// type PUnwrappedPromise<T> = T extends Promise<infer Return> ? Return : T;
+// type PFetchDataReturnType = PUnwrappedPromise<
+// 	ReturnType<typeof fetchUsersName>
+// >;
 
-type Smth = Awaited<boolean | Promise<number>>;
+// type Smth = Awaited<boolean | Promise<number>>;
 // boolean | number
 
 //! Class
@@ -1986,9 +1986,87 @@ type Smth = Awaited<boolean | Promise<number>>;
 class Box {
 	width: number;
 	height: number;
+	volume: string;
+	//* Перегрузка классов
+	// constructor(volume: string);
+	// constructor(width: number);
+	constructor(widthOrVolume: number | string, height: number) {
+		if (typeof widthOrVolume === 'number') {
+			this.width = widthOrVolume;
+		} else {
+			this.volume = widthOrVolume;
+		}
 
-	constructor(width: number, height: number) {
-		this.width = width;
-		this.height = height;
+		this.height = this.height;
 	}
 }
+
+const firstBox = new Box(10, 10);
+console.log(firstBox);
+
+class UserPlus {
+	name: string;
+}
+
+const userName = new UserPlus();
+userName.name = 'John';
+console.log(userName);
+
+// !Class Methods
+
+class Content {
+	width: number;
+	height: number;
+	volume: number | undefined;
+	content: string | undefined;
+	_prop?: string;
+
+	constructor(width: number, volume?: number, content?: string) {
+		this.width = width;
+		this.volume = volume;
+		this.content = content;
+		this.height = 500;
+		this._prop = 'DON`T TOUCH'; // нельзя менять руками (псевдо приватное)
+	}
+
+	calculateVolume(): void {
+		if (!this.volume) {
+			this.volume = this.width * this.height;
+			console.log(`Volume of box ${this.volume}`);
+		} else {
+			console.log(`Volume of box ${this.volume}`);
+		}
+	}
+	checkContentSize(transport: number): string;
+	checkContentSize(transport: number[]): string;
+	checkContentSize(transport: number | number[]): string {
+		if (typeof transport === 'number') {
+			return transport >= this.width ? 'OK' : 'Not OK';
+		} else {
+			return transport.some(t => t >= this.width) ? 'OK' : 'Not OK';
+		}
+	}
+
+	//? Геттеры и Сеттеры называются как свойство, только без лодаша ("_"), если свойство псевдо приватное
+	get prop() {
+		return this._prop;
+	}
+	set prop(value) {
+		this._prop = `Date: ${new Date().toTimeString()}, Content: ${value}`;
+	}
+	// Если сеттер не указан то свойство будет только для чтения (READONLY)
+	// Геттеры и сеттеры не могут быть асинхронными
+
+	async propAsync(value: string) {
+		const date = await new Date().toTimeString();
+		this._prop = `Date: ${new Date().toTimeString()}, Prop: ${value}`;
+	}
+}
+
+const firstContent = new Content(130);
+const firstContentSize = new Content(130);
+firstContent.calculateVolume();
+console.log(firstContent.checkContentSize(150)); // OK
+console.log(firstContent.checkContentSize([90, 100, 70])); // not OK
+console.log((firstContent.prop = 'Test')); // setter
+console.log(firstContent.prop); // setter

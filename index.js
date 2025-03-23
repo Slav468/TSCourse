@@ -1,57 +1,31 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var _a;
-var str = 'str';
+"use strict";
+const str = 'str';
 console.log(str);
 // Data types
-var userId = 'Patrick'; // String
-var number = NaN; // Number infinity, 1, -1, 3e10
-var boolean = false; // Boolean true or false
-var isBirthdayData = true;
-var ageData = 36;
-var userNameData = 'John';
+let userId = 'Patrick'; // String
+let number = NaN; // Number infinity, 1, -1, 3e10
+let boolean = false; // Boolean true or false
+const isBirthdayData = true;
+const ageData = 36;
+const userNameData = 'John';
 // TYPE Any
 // Parse = any
-var userDataJson = '{"isBirthdayData: boolean":"true", "ageData: number":"36", "userNameData: string":"John" }';
-var userObj = JSON.parse(userDataJson);
+const userDataJson = '{"isBirthdayData: boolean":"true", "ageData: number":"36", "userNameData: string":"John" }';
+const userObj = JSON.parse(userDataJson);
 // let num;
 // Empty = any
-var salary;
-salary = 5000;
+let salary;
+salary = 5_000;
 //! Task
 // ---------------------------------------------------------------//
-var currRate = '1.05';
-var fetchCurr = function (response) {
-    var data = JSON.parse(response);
+const currRate = '1.05';
+const fetchCurr = (response) => {
+    const data = JSON.parse(response);
     return data;
 };
 function transferEurToUsd(available, amount, commission) {
     if (available) {
-        var res = fetchCurr(currRate) * amount * commission;
+        let res = fetchCurr(currRate) * amount * commission;
         console.log(res);
     }
     else {
@@ -62,12 +36,12 @@ transferEurToUsd(true, 500, 1.05);
 // ----------------------------------------------------------------//
 //! Task
 // TYPE Never
-var createError = function (msg) {
+const createError = (msg) => {
     throw new Error(msg);
 };
 function logBrtMsg(isBirthday, userName, age) {
     if (isBirthday) {
-        return "Congrats ".concat(userName.toUpperCase(), ", ").concat(age + 1);
+        return `Congrats ${userName.toUpperCase()}, ${age + 1}`;
     }
     else {
         return createError('Error');
@@ -75,30 +49,30 @@ function logBrtMsg(isBirthday, userName, age) {
 }
 logBrtMsg(isBirthdayData, userNameData, ageData);
 // TYPE null
-var test = null;
-var test2 = null;
+const test = null;
+const test2 = null;
 // const test11: string = null; // Error
 // const test22: number = null; // Error
 // TYPE undefined
-var test3 = undefined;
-var test4 = undefined;
+const test3 = undefined;
+const test4 = undefined;
 // const test33: string = undefined; // Error
 // const test44: any = undefined;// Error
 // TYPE Symbol
-var id1 = Symbol('symbol1');
-var id2 = Symbol('symbol1');
-var data = (_a = {},
-    _a[id1] = 1,
-    _a[id2] = 2,
-    _a);
+const id1 = Symbol('symbol1');
+const id2 = Symbol('symbol1');
+const data = {
+    [id1]: 1,
+    [id2]: 2,
+};
 console.log(data[id2]);
 // TYPE BigInt
-var num1 = 1n;
-var num2 = 2n;
+const num1 = 1n;
+const num2 = 2n;
 console.log(num1 + num2);
 // TYPE Object
 //? Not typing  in Object
-var userData = {
+const userData = {
     isBirthdayData: true,
     ageData: 40,
     userNameData: 'Jack',
@@ -108,13 +82,12 @@ var userData = {
 };
 // Typing object as function arguments
 //? Destructuring object
-function logBrhMsg(_a) {
-    var isBirthdayData = _a.isBirthdayData, ageData = _a.ageData, userNameData = _a.userNameData, error = _a.messagesData.error;
+function logBrhMsg({ isBirthdayData, ageData, userNameData, messagesData: { error }, }) {
     if (isBirthdayData) {
-        return "Congrats ".concat(userNameData.toUpperCase(), ", age: ").concat(ageData);
+        return `Congrats ${userNameData.toUpperCase()}, age: ${ageData}`;
     }
     else if (!isBirthdayData) {
-        return "Too bad";
+        return `Too bad`;
     }
     else {
         return error;
@@ -123,41 +96,40 @@ function logBrhMsg(_a) {
 logBrhMsg(userData);
 // Typing array
 //? string[] читается как массив содержащий стоки (состоящий из таких типов данных, могут быть другие типы данных)
-var num4 = [1, 2, 3, 4];
-var departments = ['dev', 'design', 'marketing'];
-var department = departments[0];
+const num4 = [1, 2, 3, 4];
+const departments = ['dev', 'design', 'marketing'];
+const department = departments[0];
 // departments.push();
-var report = departments
-    .filter(function (d) { return d !== 'dev'; })
-    .map(function (d) { return "".concat(d, " - done!"); });
+const report = departments
+    .filter((d) => d !== 'dev')
+    .map((d) => `${d} - done!`);
 //! ТАК ДЕЛАТЬ НЕ НУЖНО (но можно)
-var anyData = [1, 'string', false];
+const anyData = [1, 'string', false];
 //? number[][] читается как массив массивов (матрица)
-var num3 = [
+const num3 = [
     [1, 2, 3],
     [1, 2, 3],
 ];
 // Destructuring Array
-var dev = report[0];
+const [dev] = report;
 console.log(dev);
 //! Task
 // ----------------------------------------------------------------//
-var electricityUserData = {
+const electricityUserData = {
     readings: 95,
     units: 'kWt',
     mode: 'double',
 };
-var waterUserData = {
+const waterUserData = {
     readings: 3,
     units: 'm3',
 };
-var elRate = 0.45;
-var wRate = 2;
-var monthPayments = [0, 0]; // [electricity, water]
-var calculatePayments = function (
+const elRate = 0.45;
+const wRate = 2;
+const monthPayments = [0, 0]; // [electricity, water]
+const calculatePayments = (
 // destructuring object
-_a, wData, elRate, wRate) {
-    var readings = _a.readings, units = _a.units, mode = _a.mode;
+{ readings, units, mode }, wData, elRate, wRate) => {
     if (mode === 'double' && readings < 50) {
         monthPayments[0] = readings * elRate * 0.7;
     }
@@ -167,29 +139,33 @@ _a, wData, elRate, wRate) {
     monthPayments[1] = wData.readings * wRate;
 };
 calculatePayments(electricityUserData, waterUserData, elRate, wRate);
-var sendInvoice = function (
+const sendInvoice = (
 // destructuring array
-_a, electricityUserData, waterUserData) {
-    var el = _a[0], water = _a[1];
-    var text = "    Hello!\n    This month you used ".concat(electricityUserData.readings, " ").concat(electricityUserData.units, " of electricity\n    It will cost: ").concat(el, "\u20AC\n\n    This month you used ").concat(waterUserData.readings, " ").concat(waterUserData.units, " of water\n    It will cost: ").concat(water, "\u20AC");
+[el, water], electricityUserData, waterUserData) => {
+    const text = `    Hello!
+    This month you used ${electricityUserData.readings} ${electricityUserData.units} of electricity
+    It will cost: ${el}€
+
+    This month you used ${waterUserData.readings} ${waterUserData.units} of water
+    It will cost: ${water}€`;
     return text;
 };
-var invoice = sendInvoice(monthPayments, electricityUserData, waterUserData);
+const invoice = sendInvoice(monthPayments, electricityUserData, waterUserData);
 console.log(invoice);
 // ----------------------------------------------------------------//
 //! Task
 // ! Tuples (кортежи)
 //* Запись набора данных в строгом порядке,  кортеж технически - это массив.
 // * элементы строго определены при их аннотации
-var userDataTuple = [true, 1, 'string'];
+const userDataTuple = [true, 1, 'string'];
 //? расширение кортежей через spread/rest оператор
-var userDataTuple2 = [true, 1, 'string'];
-var userDataTuple3 = [true, 1, 'string'];
-var userDataTuple4 = [true, 1, 'string'];
+const userDataTuple2 = [true, 1, 'string'];
+const userDataTuple3 = [true, 1, 'string'];
+const userDataTuple4 = [true, 1, 'string'];
 // ! Union (объединение типов)
 // * string | number - это строка или число (Union)
-var message = 'Hello';
-var messages = ['a', 'b', 'c'];
+const message = 'Hello';
+const messages = ['a', 'b', 'c'];
 // ! Narrowing (сужение типов)
 // * вручную проверили через условие - это и есть сужение типов
 // function printMsg(msg: string | number): void {
@@ -205,19 +181,19 @@ var messages = ['a', 'b', 'c'];
 // }
 function printMsg(msg) {
     if (Array.isArray(msg)) {
-        msg.forEach(function (item) { return console.log(item); });
+        msg.forEach(item => console.log(item));
     }
     else {
         console.log(msg.toFixed);
     }
 }
 printMsg(4);
-var printReadings = function (a, b) {
+const printReadings = (a, b) => {
     if (typeof a === 'number' && typeof b === 'number') {
         console.log(a + b);
     }
 };
-var printReadings2 = function (a) {
+const printReadings2 = (a) => {
     console.log(a.slice(0, 3));
 };
 function checkReadings(readings) {
@@ -236,23 +212,23 @@ function logValue(x) {
 // ! Literal types (примитивные литеральные типы)
 // *  это типы на основании конкретных значений примитивов
 // * (только то, что указано аннотации переменной)
-var hello = 'Hello';
+let hello = 'Hello';
 // выдает ошибку, т.к. не может быть ничего другого кроме 'Hello'
 // hello = '';
-var port3000 = 3000;
-var port3001 = 3001;
-var serverConfig = {
+const port3000 = 3_000;
+const port3001 = 3_001;
+const serverConfig = {
     protocol: 'https',
     port: 3000,
 };
-var backupConfig = {
+const backupConfig = {
     protocol: 'http',
     port: 3001,
     role: 'admin',
 };
-var startServer = function (protocol, port) {
+const startServer = (protocol, port) => {
     if (port === port3000 || port === port3001) {
-        console.log("Server started on ".concat(protocol, "://").concat(port));
+        console.log(`Server started on ${protocol}://${port}`);
         return 'Server started';
     }
     else {
@@ -262,29 +238,27 @@ var startServer = function (protocol, port) {
 };
 startServer('http', port3000);
 startServer(serverConfig.protocol, serverConfig.port);
-function createAnimation(id, animationName, timingFunc, duration, iterationCount) {
-    if (timingFunc === void 0) { timingFunc = 'ease'; }
-    if (iterationCount === void 0) { iterationCount = 'infinite'; }
+function createAnimation(id, animationName, timingFunc = 'ease', duration, iterationCount = 'infinite') {
     // const elem = document.querySelector(`#${id}`) as HTMLElement;
-    console.log("".concat(animationName, " ").concat(duration, "ms ").concat(timingFunc, " ").concat(iterationCount));
+    console.log(`${animationName} ${duration}ms ${timingFunc} ${iterationCount}`);
     // if (elem) {
     // elem.style.animation = `${animationName} ${duration}ms ${timingFunc} ${iterationCount}`;
     // }
 }
 createAnimation('id', 'animation', 'ease', 1000, 'infinite');
-var serverCOfigInterface = {
+const serverCOfigInterface = {
     protocol: 'http',
     port: 3000,
-    log: function (msg) {
+    log: (msg) => {
         console.log(msg);
     },
     role: 'user',
     // добавляем свойство
     domain: 'com',
 };
-var startServerInterface = function (protocol, port) {
+const startServerInterface = (protocol, port) => {
     if (port === port3000 || port === port3001) {
-        console.log("Server started on ".concat(protocol, "://").concat(port));
+        console.log(`Server started on ${protocol}://${port}`);
         return 'Server started';
     }
     else {
@@ -293,13 +267,13 @@ var startServerInterface = function (protocol, port) {
     }
 };
 startServerInterface(serverCOfigInterface.protocol, serverCOfigInterface.port, serverCOfigInterface.log);
-var style = {
+const style = {
     position: 'absolute',
     top: '20px',
     left: '20px',
 };
 // главный объект со всеми данными, должен подходить под формат TotalWarehouse
-var totalData = {
+const totalData = {
     jackets: 5,
     hats: 'empty',
     socks: 'empty',
@@ -312,12 +286,12 @@ var totalData = {
     deficit: true,
     date: new Date(),
 };
-var printReport = function (data) {
-    var result = Object.entries(data)
-        .filter(function (item) { return item[1] === 'empty'; })
-        .reduce(function (res, item) { return "".concat(res, " ").concat(item[0], ","); }, '');
+const printReport = data => {
+    const result = Object.entries(data)
+        .filter(item => item[1] === 'empty')
+        .reduce((res, item) => `${res} ${item[0]},`, '');
     if (result.trim().length) {
-        return "We need this items:".concat(result.slice(0, -1));
+        return `We need this items:${result.slice(0, -1)}`;
     }
     else {
         return 'Everything fine';
@@ -329,33 +303,32 @@ console.log(printReport(totalData));
 // ! Type Inference (механизм вывода типов)
 // не нужна аннотация типов если TS может это сделать сам
 // избегаем any
-var number10;
+let number10;
 number = 10;
-var userDataForInterface = '{"isBirthdayData: boolean":"true", "ageData: number":"36", "userNameData: string":"John" }';
-var userDataWithoutAny = JSON.parse(userDataForInterface);
+const userDataForInterface = '{"isBirthdayData: boolean":"true", "ageData: number":"36", "userNameData: string":"John" }';
+const userDataWithoutAny = JSON.parse(userDataForInterface);
 // вывод типов даст boolean
-var isOkay = true;
+let isOkay = true;
 // вывод типов даст true
-var isOkay2 = true;
-var movement = false;
+const isOkay2 = true;
+let movement = false;
 if (isOkay) {
     movement = 'moving';
 }
-var arr = ['hello', 3, true, [true, 1]];
-var propertyObject = {
+const arr = ['hello', 3, true, [true, 1]];
+const propertyObject = {
     login: 'login',
     password: 'password',
     age: 50,
 };
-var dbName;
+let dbName;
 sendUserData(propertyObject, 'Black');
 console.log(dbName);
 function sendUserData(obj, dbName) {
-    var _a, _b;
     dbName = 'Alex';
-    console.log((_b = (_a = obj.parents) === null || _a === void 0 ? void 0 : _a.father) === null || _b === void 0 ? void 0 : _b.charAt(0), dbName === null || dbName === void 0 ? void 0 : dbName.toLowerCase);
+    console.log(obj.parents?.father?.charAt(0), dbName?.toLowerCase);
 }
-var basicPorts = [3000, 3001, 5000];
+const basicPorts = [3_000, 3_001, 5_000];
 var AnimTimingFunc;
 (function (AnimTimingFunc) {
     AnimTimingFunc["EASE"] = "ease";
@@ -380,7 +353,7 @@ function frame(elem, dir, tFunc) {
 frame('elem', 2 /* Direction.RIGHT */, AnimTimingFunc.EASE);
 //! Unknown (неизвестное)
 // сущность неизвестного типа
-var some;
+let some;
 some = 'hello';
 // нельзя назначить тип Unknown для типа string
 // let data: string[] = some;
@@ -393,7 +366,7 @@ function fetchData(data) {
 function saveParse(s) {
     return JSON.parse(s);
 }
-var dataParse = saveParse('{"isBirthdayData":true, "ageData":36, "userNameData":"John" }');
+const dataParse = saveParse('{"isBirthdayData":true, "ageData":36, "userNameData":"John" }');
 function transferData(d) {
     if (typeof d === 'object' && d) {
         console.log(d);
@@ -405,12 +378,12 @@ function transferData(d) {
 transferData(dataParse);
 //! Запросы типов
 //  data: typeof dataFromControl - проверка на соответствие типов
-var dataFromControl = {
+const dataFromControl = {
     water: 200,
     el: 350,
 };
 function checkReadingsData(data) {
-    var dataFromUser = {
+    const dataFromUser = {
         water: 200,
         el: 350,
     };
@@ -421,8 +394,8 @@ function checkReadingsData(data) {
         return false;
     }
 }
-var PI = 3.14;
-var PIClone;
+const PI = 3.14;
+let PIClone;
 // ----------------------------------------------------------------//
 // ! Task
 // Перечисление с названием TypesOfMedia, которое включает строчные типы video, audio
@@ -440,13 +413,12 @@ var FormatsOfMedia;
     FormatsOfMedia["FLV"] = ".flv";
     FormatsOfMedia["WEBM"] = ".webM";
 })(FormatsOfMedia || (FormatsOfMedia = {}));
-function playMedia(_a) {
-    var _b = _a === void 0 ? {
-        name: 'example',
-        type: TypesOfMedia.Video,
-        format: FormatsOfMedia.MKV,
-    } : _a, name = _b.name, type = _b.type, format = _b.format, subtitles = _b.subtitles, marks = _b.marks;
-    var marksLog;
+function playMedia({ name, type, format, subtitles, marks } = {
+    name: 'example',
+    type: TypesOfMedia.Video,
+    format: FormatsOfMedia.MKV,
+}) {
+    let marksLog;
     if (Array.isArray(marks)) {
         marksLog = marks.join(', ');
     }
@@ -456,7 +428,9 @@ function playMedia(_a) {
     else {
         marksLog = 'Unsupported type of marks';
     }
-    console.log("Media ".concat(name).concat(format, " is ").concat(type, "\n    Marks: ").concat(marksLog, "\n    Subtitles: ").concat(subtitles !== null && subtitles !== void 0 ? subtitles : 'none'));
+    console.log(`Media ${name}${format} is ${type}
+    Marks: ${marksLog}
+    Subtitles: ${subtitles ?? 'none'}`);
     return 'Media started';
 }
 playMedia({
@@ -469,10 +443,10 @@ playMedia({
 // ----------------------------------------------------------------//
 // ! Task
 //! Утверждение типов (Type assertions)
-var fetchData2 = function (url, method) {
+const fetchData2 = (url, method) => {
     console.log('Fetched!');
 };
-var reqOptions = {
+const reqOptions = {
     url: 'https://someurl.com',
     // method: 'GET',
     method: 'GET',
@@ -490,13 +464,13 @@ fetchData2(reqOptions.url, reqOptions.method);
 // console.log(someNumber * 2);
 //! Приведение типов
 // * Примитивы
-var num = 5;
-var strNum = num.toString();
-var str2 = '5';
-var bum2 = Number(str2);
-var department2 = {
+const num = 5;
+const strNum = num.toString();
+const str2 = '5';
+const bum2 = Number(str2);
+const department2 = {
     name: 'web-dev',
-    budget: 50000,
+    budget: 50_000,
 };
 function transformDept(department, amount) {
     return {
@@ -504,7 +478,7 @@ function transformDept(department, amount) {
         projectBudget: amount,
     };
 }
-var mainProject = transformDept(department2, 100000);
+const mainProject = transformDept(department2, 100_000);
 console.log(mainProject);
 //! Type Guard
 // Функция или метод которая определяет тип и возвращает boolean
@@ -546,15 +520,15 @@ function isShip(ship) {
 }
 function calculateArea(a, b) {
     if (b) {
-        var rect = {
-            a: a,
-            b: b,
+        const rect = {
+            a,
+            b,
             area: a * b,
         };
         return rect;
     }
     else {
-        var square = {
+        const square = {
             side: a,
             area: a * a,
         };
@@ -581,17 +555,17 @@ function checkAnimalData(animal) {
         return animal.data;
     }
     else {
-        return "".concat(animal.data.message, ", you can try in ").concat(animal.data.nextUpdateIn);
+        return `${animal.data.message}, you can try in ${animal.data.nextUpdateIn}`;
     }
 }
-var retString = function () {
+const retString = () => {
     //
     return 'bla bla bla bla bla bla';
 };
-var s = retString();
+const s = retString();
 console.log(s);
-var names = ['Ann', 'John'];
-names.forEach(function (name, i, arr) {
+const names = ['Ann', 'John'];
+names.forEach((name, i, arr) => {
     arr.push('Hey!');
 });
 // Callback ничего не возвращает и принудительно возвращается void
@@ -603,41 +577,41 @@ names.forEach(function (name, i, arr) {
 function genericSyntax(data) {
     return data;
 }
-var genericResult = genericSyntax(1);
-var genericResult2 = genericSyntax('1');
-var genericNum = 3;
-var genericStr = '3';
-var genericResult3 = genericSyntax(genericNum);
-var genericSmth = { design: 'Hello' };
-var genericSmth2 = { design: 10 };
-var genericNum6 = 10;
-var genericUser = {
+const genericResult = genericSyntax(1);
+const genericResult2 = genericSyntax('1');
+const genericNum = 3;
+const genericStr = '3';
+const genericResult3 = genericSyntax(genericNum);
+const genericSmth = { design: 'Hello' };
+const genericSmth2 = { design: 10 };
+const genericNum6 = 10;
+const genericUser = {
     login: 'str',
     age: 10,
 };
-var manyType = ['1', '2'];
-var parent2 = {
+const manyType = ['1', '2'];
+const parent2 = {
     parents: { mother: 'Ann', father: 'John', married: false },
     name: 'Ann',
     age: 10,
 };
-var depositMoney = function (amount) {
+const depositMoney = (amount) => {
     console.log('request amount:', amount);
     return amount;
 };
 depositMoney(500);
 depositMoney('500');
-var player1 = {
+const player1 = {
     game: 'CS:GO',
     hours: 300,
     server: 'basic',
 };
-var player2 = {
+const player2 = {
     game: 2048,
     hours: '300 h.',
     server: 'arcade',
 };
-var player3 = {
+const player3 = {
     game: 'Chess',
     hours: {
         total: 500,
@@ -670,7 +644,7 @@ function calculateAmountOfFigures(figure) {
     /**
      * Initialize an object with initial amount of each shape as 0
      */
-    var amount = {
+    const amount = {
         squares: 0,
         circles: 0,
         triangles: 0,
@@ -679,8 +653,7 @@ function calculateAmountOfFigures(figure) {
     /**
      * Loop through each figure and increase the count of the corresponding shape
      */
-    for (var _i = 0, figure_1 = figure; _i < figure_1.length; _i++) {
-        var fig = figure_1[_i];
+    for (let fig of figure) {
         switch (fig.name) {
             case FigureNames.RECT:
                 amount.squares += 1;
@@ -701,7 +674,7 @@ function calculateAmountOfFigures(figure) {
      */
     return amount;
 }
-var dataFigures = [
+const dataFigures = [
     {
         name: 'rect',
         data: { a: 5, b: 10 },
@@ -736,41 +709,40 @@ var dataFigures = [
 ];
 console.log(calculateAmountOfFigures(dataFigures));
 //! Class Generics
-var User = /** @class */ (function () {
-    function User(name, age) {
+class User {
+    name;
+    age;
+    constructor(name, age) {
         this.name = name;
         this.age = age;
     }
-    User.prototype.sayMyName = function (surname) {
+    sayMyName(surname) {
         if (typeof surname !== 'string') {
-            return "I have only ".concat(surname);
+            return `I have only ${surname}`;
         }
         else {
-            return "My name is ".concat(this.name, " ").concat(surname);
+            return `My name is ${this.name} ${surname}`;
         }
-    };
-    return User;
-}());
-var nameStr = 'Sergey';
-var ageNum = 30;
-var user = new User(nameStr, ageNum);
-console.log(user.sayMyName('Sckaromnick'));
-var user2 = new User('Sergey', 30);
-var AdminUser = /** @class */ (function (_super) {
-    __extends(AdminUser, _super);
-    function AdminUser(name, age, rules) {
-        var _this = _super.call(this, name, age) || this;
-        _this.rules = rules;
-        return _this;
     }
-    return AdminUser;
-}(User));
-var ADMIN = new AdminUser('Sergey', 30, 'read');
+}
+const nameStr = 'Sergey';
+const ageNum = 30;
+const user = new User(nameStr, ageNum);
+console.log(user.sayMyName('Sckaromnick'));
+const user2 = new User('Sergey', 30);
+class AdminUser extends User {
+    rules;
+    constructor(name, age, rules) {
+        super(name, age);
+        this.rules = rules;
+    }
+}
+const ADMIN = new AdminUser('Sergey', 30, 'read');
 console.log(ADMIN);
 //! Readonly, Partial, Required
-var arrArray = [];
-var arrArray2 = [];
-var roArray = [
+const arrArray = [];
+const arrArray2 = [];
+const roArray = [
     'str',
     'str',
     'str',
@@ -780,14 +752,14 @@ var roArray = [
 ];
 // Partial
 // * все свойства становятся необязательными (так если бы стоял знак "?")
-var state = {
+const state = {
     data: {
         name: 'John',
     },
 };
 // Required
 // * все свойства становятся обязательными (удаляет все знаки "?" у свойств)
-var strictState = {
+const strictState = {
     data: {
         name: 'John',
     },
@@ -800,16 +772,16 @@ function action(state) {
     state.data.name = 'data';
     // более глубокое изменение возможно
 }
-var keys = 'debts';
+const keys = 'debts';
 function printDebts(company, name, debts) {
-    console.log("Company ".concat(company[name], " has debts ").concat(company[debts]));
+    console.log(`Company ${company[name]} has debts ${company[debts]}`);
 }
 // const hh: ICompany = {
 // 	name: 'hh',
 // 	debts: 1000,
 // };
 // printDebts(hh, 'name', 'debts');
-var google = {
+const google = {
     name: 'google',
     open: 'true',
     debts: 5000,
@@ -822,16 +794,16 @@ var google = {
     },
 };
 printDebts(google, 'name', 'open');
-var keys2 = 'name';
+const keys2 = 'name';
 //! Indexed Access Types
 //* получение типа
 // Нельзя так мы обращаемся к типу, который определяет получаемый тип, а не к объекту с находящимся в нем типом
 // type TCompanyDebtsType = typeof ICompany.debts;
 // const debts = 'debts';
 // let debts = 'debts' as "debts";
-var debts = 'debts';
+let debts = 'debts';
 // Типизировать объект phones
-var phones = [
+const phones = [
     {
         company: 'Nokia',
         number: 1285637,
@@ -856,23 +828,23 @@ var phones = [
 ];
 function filterPhonesByDate(phones, key, initial) {
     return phones
-        .filter(function (phone) {
-        var manufactured = phone[key];
+        .filter(phone => {
+        const manufactured = phone[key];
         if (manufactured instanceof Date &&
             manufactured.getTime() > new Date(initial).getTime()) {
             return phone;
         }
     })
-        .map(function (phone) {
-        var newObj = __assign(__assign({}, phone), { initialDate: initial });
+        .map(phone => {
+        const newObj = { ...phone, initialDate: initial };
         return newObj;
     });
 }
 // Второй аргумент при вызове функции должен быть связан с первым,
 // а значит мы получим подсказки - свойства этого объекта
 console.log(filterPhonesByDate(phones, 'manufactured', '2022-01-01'));
-var str3 = 'Hello';
-var user3 = {
+const str3 = 'Hello';
+const user3 = {
     created: 'created',
 };
 // function calculateDailyCalories(
@@ -887,21 +859,21 @@ var user3 = {
 // }
 function calculateDailyCalories(numOrString) {
     if (typeof numOrString === 'string') {
-        var obj_1 = { weights: numOrString };
+        const obj = { weights: numOrString };
         // return obj as T extends string ? IDataFromUser : IDataFromBase;
-        return obj_1;
+        return obj;
     }
-    var obj = { calories: numOrString };
+    const obj = { calories: numOrString };
     // return obj as T extends string ? IDataFromUser : IDataFromBase;
     return obj;
 }
-var alex = {
+const alex = {
     name: 'Alex',
     age: '30',
     email: '5HtBb@example.com',
     password: '123456',
 };
-var gameData = {
+const gameData = {
     alex: {
         customUsa: 'string',
         customChina: 'string',
@@ -921,14 +893,13 @@ function calculate(a, b) {
     return a * b;
 }
 // Получение типа аргументов класса
-var Example = /** @class */ (function () {
-    function Example(a, b) {
+class Example {
+    constructor(a, b) {
         a = a;
         b = b;
     }
-    return Example;
-}());
-var fitnessClubCenter = {
+}
+const fitnessClubCenter = {
     clubName: 'Fitness club Center',
     location: 'central ave. 45, 5th floor',
     classes: [
@@ -995,12 +966,11 @@ var fitnessClubCenter = {
         },
     ],
 };
-function createSlider(_a) {
-    var _b = _a === void 0 ? {} : _a, _c = _b.container, container = _c === void 0 ? '' : _c, _d = _b.numberOfSlides, numberOfSlides = _d === void 0 ? 1 : _d, _e = _b.speed, speed = _e === void 0 ? 300 : _e, _f = _b.direction, direction = _f === void 0 ? 'horizontal' : _f, _g = _b.dots, dots = _g === void 0 ? true : _g, _h = _b.arrows, arrows = _h === void 0 ? true : _h;
+function createSlider({ container = '', numberOfSlides = 1, speed = 300, direction = 'horizontal', dots = true, arrows = true, } = {}) {
     console.log(container, numberOfSlides, speed, direction, dots, arrows);
 }
 createSlider();
-var customSliderOptions = {
+const customSliderOptions = {
     container: 'id',
     numberOfSlides: 4,
     speed: 1100,
@@ -1013,33 +983,102 @@ function createCustomSlider(options) {
         console.log(options);
     }
 }
-var validationData = {
+const validationData = {
     login: { isValid: false, errorMsg: 'At least 3 characters' },
     password: { isValid: true },
 };
 //! work with AJAX (Promise, async/await, fetching)
-var jsonTest = '{"name" : "Test", "data" : "4"}';
-var objFromJson = JSON.parse(jsonTest);
-var toDoLIst = [];
-// fetch('https://jsonplaceholder.typicode.com/todos/1')
+// 1. Нельзя зааннотировать все
+// 2. проводим базовые проверки по типу Array.isArray(), typeof, instanceof с готовым результатом (сужение типов)
+// 3. аннотации не будут лишними (для понимания, что мы ожидаем в выводе и почему проводим конкретные проверки из п.2)
+const jsonTest = '{"name" : "Test", "data" : "4"}';
+const objFromJson = JSON.parse(jsonTest);
+let toDoLIst = [];
+// fetch('https://jsonplaceholder.typicode.com/todos')
 // 	.then(response => response.json())
 // 	.then(json => {
 // 		if ('id' in json) {
 // 			toDoLIst.push(json);
+// 		} else if (Array.isArray(json)) {
+// 			toDoLIst = json;
+// 		} else {
+// 			console.log(`${json} is a string`);
 // 		}
 // 		console.log(toDoLIst);
 // 	});
-fetch('https://jsonplaceholder.typicode.com/todos')
-    .then(function (response) { return response.json(); })
-    .then(function (json) {
-    if ('id' in json) {
-        toDoLIst.push(json);
+//? Promise это дженерик поэтому передаем ему тип сущности с которой работаем (string, number)
+// const promise = new Promise<string>((resolve, reject) => {
+// 	resolve('string');
+// });
+// promise.then(value => {
+// 	console.log(value.toLowerCase());
+// });
+// Awaited promise аннотирует ожидаемый результат от промиса
+// type FromPromise = Awaited<Promise<Promise<number>>>;
+// interface IUserAwait {
+// 	name: string;
+// }
+// async function fetchUsersName(): Promise<IUserAwait[]> {
+// 	const users: IUserAwait[] = [{ name: 'John' }];
+// 	return users;
+// }
+// const users = fetchUsersName();
+// //? ReturnType - возвращает тип возвращаемого значения функции
+// type PFetchUsersType = Awaited<ReturnType<typeof fetchUsersName>>;
+// //? до стандарта TS 4.5
+// type PUnwrappedPromise<T> = T extends Promise<infer Return> ? Return : T;
+// type PFetchDataReturnType = PUnwrappedPromise<
+// 	ReturnType<typeof fetchUsersName>
+// >;
+// type Smth = Awaited<boolean | Promise<number>>;
+// boolean | number
+//! Class
+class Box {
+    width;
+    height;
+    volume;
+    //* Перегрузка классов
+    // constructor(volume: string);
+    // constructor(width: number);
+    constructor(widthOrVolume, height) {
+        if (typeof widthOrVolume === 'number') {
+            this.width = widthOrVolume;
+        }
+        else {
+            this.volume = widthOrVolume;
+        }
+        this.height = this.height;
     }
-    else if (Array.isArray(json)) {
-        toDoLIst = json;
+}
+const firstBox = new Box(10, 10);
+console.log(firstBox);
+class UserPlus {
+    name;
+}
+const userName = new UserPlus();
+userName.name = 'John';
+console.log(userName);
+// !Class Methods
+class Content {
+    width;
+    height;
+    volume;
+    content;
+    constructor(width, volume, content) {
+        this.width = width;
+        this.volume = volume;
+        this.content = content;
+        this.height = 500;
     }
-    else {
-        console.log("".concat(json, " is a string"));
+    calculateVolume() {
+        if (!this.volume) {
+            this.volume = this.width * this.height;
+            console.log(`Volume of box ${this.volume}`);
+        }
+        else {
+            console.log(`Volume of box ${this.volume}`);
+        }
     }
-    console.log(toDoLIst);
-});
+}
+const firstContent = new Content(130);
+firstContent.calculateVolume();
