@@ -2016,7 +2016,8 @@ console.log(userName);
 
 class Content {
 	width: number;
-	height: number;
+	// в современном JS можно определить свойство вне класса как height
+	height: number = 500;
 	volume: number | undefined;
 	content: string | undefined;
 	_prop?: string;
@@ -2025,7 +2026,6 @@ class Content {
 		this.width = width;
 		this.volume = volume;
 		this.content = content;
-		this.height = 500;
 		this._prop = 'DON`T TOUCH'; // нельзя менять руками (псевдо приватное)
 	}
 
@@ -2070,3 +2070,29 @@ console.log(firstContent.checkContentSize(150)); // OK
 console.log(firstContent.checkContentSize([90, 100, 70])); // not OK
 console.log((firstContent.prop = 'Test')); // setter
 console.log(firstContent.prop); // setter
+
+class Styles {
+	[s: string]: string | ((str: string) => boolean);
+	// method() {}
+}
+
+const styleNew = new Styles();
+styleNew.color = 'red';
+styleNew.font = 'Roboto';
+console.log(styleNew.color);
+
+//! Class extends
+class PresentBox extends Content {
+	wrap: string;
+
+	constructor(wrap: string, width: number, height: number) {
+		super(width, height);
+		this.wrap = wrap;
+	}
+	override async propAsync(value: string) {
+		const date = await new Date().toTimeString();
+		this._prop = `Date: ${new Date().toTimeString()}, Prop: ${value}`;
+	}
+}
+
+const present = new PresentBox('red', 40, 30);
