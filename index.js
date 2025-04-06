@@ -1061,14 +1061,16 @@ console.log(userName);
 // !Class Methods
 class Content {
     width;
-    height;
+    // в современном JS можно определить свойство вне класса как height
+    height = 500;
     volume;
     content;
+    _prop;
     constructor(width, volume, content) {
         this.width = width;
         this.volume = volume;
         this.content = content;
-        this.height = 500;
+        this._prop = 'DON`T TOUCH'; // нельзя менять руками (псевдо приватное)
     }
     calculateVolume() {
         if (!this.volume) {
@@ -1079,6 +1081,142 @@ class Content {
             console.log(`Volume of box ${this.volume}`);
         }
     }
+    checkContentSize(transport) {
+        if (typeof transport === 'number') {
+            return transport >= this.width ? 'OK' : 'Not OK';
+        }
+        else {
+            return transport.some(t => t >= this.width) ? 'OK' : 'Not OK';
+        }
+    }
+    //? Геттеры и Сеттеры называются как свойство, только без лодаша ("_"), если свойство псевдо приватное
+    get prop() {
+        return this._prop;
+    }
+    set prop(value) {
+        this._prop = `Date: ${new Date().toTimeString()}, Content: ${value}`;
+    }
+    // Если сеттер не указан то свойство будет только для чтения (READONLY)
+    // Геттеры и сеттеры не могут быть асинхронными
+    async propAsync(value) {
+        const date = await new Date().toTimeString();
+        this._prop = `Date: ${new Date().toTimeString()}, Prop: ${value}`;
+    }
 }
 const firstContent = new Content(130);
+const firstContentSize = new Content(130);
 firstContent.calculateVolume();
+console.log(firstContent.checkContentSize(150)); // OK
+console.log(firstContent.checkContentSize([90, 100, 70])); // not OK
+console.log((firstContent.prop = 'Test')); // setter
+console.log(firstContent.prop); // setter
+class Styles {
+}
+const styleNew = new Styles();
+styleNew.color = 'red';
+styleNew.font = 'Roboto';
+console.log(styleNew.color);
+//! Class extends
+class PresentBox extends Content {
+    wrap;
+    constructor(wrap, width, height) {
+        super(width, height);
+        this.wrap = wrap;
+    }
+    async propAsync(value) {
+        const date = await new Date().toTimeString();
+        this._prop = `Date: ${new Date().toTimeString()}, Prop: ${value}`;
+    }
+}
+//* можно указывать через запятую
+class UserForm {
+    login;
+    password;
+    valid = false;
+    //* аннотации не имплементируются
+    isValid(login) {
+        return login.length > 3;
+    }
+}
+//! Task for  Implements in class
+var TransferStatus;
+(function (TransferStatus) {
+    TransferStatus["Pending"] = "pending";
+    TransferStatus["Rejected"] = "rejected";
+    TransferStatus["Completed"] = "completed";
+})(TransferStatus || (TransferStatus = {}));
+var ErrorMessages;
+(function (ErrorMessages) {
+    ErrorMessages["NotFound"] = "Not found: 404";
+    ErrorMessages["NotEnoughSpace"] = "Not enough space: 507";
+    ErrorMessages["Forbidden"] = "Forbidden: 403";
+})(ErrorMessages || (ErrorMessages = {}));
+// Класс должен имплементировать ITransfer и TransferError
+class SingleFileTransfer {
+    // Место для реализаций
+    path;
+    data;
+    date;
+    message;
+    transferStatus;
+    constructor(status) {
+        this.transferStatus = status;
+    }
+    start(path, data) {
+        return 'Transfer started';
+    }
+    // Необходимо создать метод, который будет останавливать передачу данных
+    stop(reason) {
+        return `Transfer stopped by ${reason}, Date: ${this.date || new Date().toLocaleString()}`;
+    }
+    // Необходимо создать метод checkTransferStatus, проверяющий состояние передачи данных
+    checkTransferStatus() {
+        return this.transferStatus;
+    }
+    // Необходимо создать метод, который будет возвращать строку, содержащую
+    // Статус передачи и любое сообщение об ошибке. На ваш выбор или отталкиваться от приходящего аргумента
+    // Метод может показаться странным, но может использоваться для тестов, например
+    makeError() {
+        return `Status: ${TransferStatus.Rejected}, error message: ${ErrorMessages.Forbidden}`;
+    }
+}
+const transfer = new SingleFileTransfer(TransferStatus.Pending);
+console.log(transfer.checkTransferStatus());
+console.log(transfer.stop('Test'));
+console.log(transfer.makeError());
+//! Member Visibility
+// Только в TS
+class Player {
+    name;
+    #login;
+    _password;
+    server;
+    consent = false;
+    get password() {
+        return this._password;
+    }
+    set password(newPass) {
+        // Провести валидацию на символы и т.п.
+        this._password = newPass;
+    }
+}
+class CompetitivePlayer extends Player {
+    ranking;
+    isConsent() {
+        return this.consent ? 'true' : 'false';
+    }
+}
+const player = new Player();
+// Public for default
+player.name = 'test';
+// Private (only inside class)
+// player._password = 'test'; // error - private member
+player.password = 'password';
+// public
+player.server = 'test';
+// Protected
+// player.consent = true; //error
+console.log(player.name);
+// console.log(player.login); //error private member
+console.log(player.password);
+console.log(player.server);

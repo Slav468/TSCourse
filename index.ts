@@ -2185,3 +2185,46 @@ const transfer = new SingleFileTransfer(TransferStatus.Pending);
 console.log(transfer.checkTransferStatus());
 console.log(transfer.stop('Test'));
 console.log(transfer.makeError());
+
+//! Member Visibility
+// Только в TS
+
+class Player {
+	name: string;
+	#login: string;
+	private _password: string;
+	public server: string;
+	protected consent: boolean = false;
+
+	get password(): string {
+		return this._password;
+	}
+	set password(newPass: string) {
+		// Провести валидацию на символы и т.п.
+		this._password = newPass;
+	}
+}
+
+class CompetitivePlayer extends Player {
+	ranking: number;
+
+	isConsent(): string {
+		return this.consent ? 'true' : 'false';
+	}
+}
+
+const player = new Player();
+// Public for default
+player.name = 'test';
+// Private (only inside class)
+// player._password = 'test'; // error - private member
+player.password = 'password';
+// public
+player.server = 'test';
+// Protected
+// player.consent = true; //error
+
+console.log(player.name);
+// console.log(player.login); //error private member
+console.log(player.password);
+console.log(player.server);
