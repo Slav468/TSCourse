@@ -2095,4 +2095,93 @@ class PresentBox extends Content {
 	}
 }
 
-const present = new PresentBox('red', 40, 30);
+//! Implements in class
+// ? отслеживание свойств класса
+interface IUserForm {
+	login: string;
+	password: string;
+	//* в классе нужно будет добавить вручную
+	token?: number;
+}
+
+interface IValidation {
+	valid: boolean;
+	isValid: (data: string) => boolean;
+}
+
+//* можно указывать через запятую
+class UserForm implements IUserForm, IValidation {
+	login: string;
+	password: string;
+	valid: boolean = false;
+	//* аннотации не имплементируются
+	isValid(login: string) {
+		return login.length > 3;
+	}
+}
+
+//! Task for  Implements in class
+
+enum TransferStatus {
+	Pending = 'pending',
+	Rejected = 'rejected',
+	Completed = 'completed',
+}
+
+enum ErrorMessages {
+	NotFound = 'Not found: 404',
+	NotEnoughSpace = 'Not enough space: 507',
+	Forbidden = 'Forbidden: 403',
+}
+
+interface ITransfer {
+	path: string;
+	data: string[];
+	date?: Date;
+	start: (p: string, d: string[]) => string;
+	stop: (reason: string) => string;
+}
+
+interface TransferError {
+	message: ErrorMessages;
+}
+
+// Класс должен имплементировать ITransfer и TransferError
+class SingleFileTransfer implements ITransfer, TransferError {
+	// Место для реализаций
+	path: string;
+	data: string[];
+	date?: Date;
+	message: ErrorMessages;
+	transferStatus: TransferStatus;
+
+	constructor(status: TransferStatus) {
+		this.transferStatus = status;
+	}
+
+	start(path: string, data: string[]): string {
+		return 'Transfer started';
+	}
+	// Необходимо создать метод, который будет останавливать передачу данных
+	stop(reason: string): string {
+		return `Transfer stopped by ${reason}, Date: ${
+			this.date || new Date().toLocaleString()
+		}`;
+	}
+	// Необходимо создать метод checkTransferStatus, проверяющий состояние передачи данных
+	checkTransferStatus(): string {
+		return this.transferStatus;
+	}
+
+	// Необходимо создать метод, который будет возвращать строку, содержащую
+	// Статус передачи и любое сообщение об ошибке. На ваш выбор или отталкиваться от приходящего аргумента
+	// Метод может показаться странным, но может использоваться для тестов, например
+	makeError(): string {
+		return `Status: ${TransferStatus.Rejected}, error message: ${ErrorMessages.Forbidden}`;
+	}
+}
+
+const transfer = new SingleFileTransfer(TransferStatus.Pending);
+console.log(transfer.checkTransferStatus());
+console.log(transfer.stop('Test'));
+console.log(transfer.makeError());
