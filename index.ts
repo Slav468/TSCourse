@@ -2189,12 +2189,29 @@ console.log(transfer.makeError());
 //! Member Visibility
 // Только в TS
 
+function setName() {
+	return 'COD:MW';
+}
+
 class Player {
+	//! Static members
+	private static game: string = 'COD:MW';
+
 	name: string;
 	#login: string;
 	private _password: string;
 	public server: string;
 	protected consent: boolean = false;
+
+	//! Static block
+	// может быть несколько блоков
+	static {
+		Player.game = setName();
+	}
+
+	constructor(login: string) {
+		this.#login = login;
+	}
 
 	get password(): string {
 		return this._password;
@@ -2203,17 +2220,48 @@ class Player {
 		// Провести валидацию на символы и т.п.
 		this._password = newPass;
 	}
+
+	static getGameName() {
+		return Player.game;
+	}
+	//! this annotation
+	//? function declaration
+	// login(this: Player) {
+	// 	return `Login: ${this.#login} on ${this.server}`;
+	// }
+	//? function expression
+	login = () => {
+		return `Login: ${this.#login} on ${this.server}`;
+	};
+
+	connect() {
+		console.log(`Connect to server ${this.server}`);
+		return this;
+	}
+
+	// ? type guard
+	isPro(): this is CompetitivePlayer {
+		return this instanceof CompetitivePlayer;
+	}
 }
 
 class CompetitivePlayer extends Player {
 	ranking: number;
+	//? function declaration
+	// checkLogin() {
+	// 	return super.login();
+	// }
+	//? function expression
+	checkLogin() {
+		return this.login();
+	}
 
 	isConsent(): string {
 		return this.consent ? 'true' : 'false';
 	}
 }
 
-const player = new Player();
+const player = new Player('Siarghey');
 // Public for default
 player.name = 'test';
 // Private (only inside class)
@@ -2228,3 +2276,23 @@ console.log(player.name);
 // console.log(player.login); //error private member
 console.log(player.password);
 console.log(player.server);
+
+//! Static & Static blocks
+// можно вызывать без создания объекта
+// классическая конструкция class Math
+
+console.log(Player.getGameName());
+
+//! this annotation
+
+console.log(player);
+const tests = player.login.bind(player);
+tests();
+
+console.log(tests());
+//? chain method
+console.log(player.connect());
+
+const somePlayer: Player | CompetitivePlayer = new CompetitivePlayer('test4');
+
+console.log(somePlayer.isPro() ? somePlayer : somePlayer);
