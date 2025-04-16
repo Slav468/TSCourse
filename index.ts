@@ -2296,3 +2296,37 @@ console.log(player.connect());
 const somePlayer: Player | CompetitivePlayer = new CompetitivePlayer('test4');
 
 console.log(somePlayer.isPro() ? somePlayer : somePlayer);
+
+//! Abstract classes
+
+interface IEngine {
+	model: string;
+	capacity: number;
+	startEngine: (time: Date) => string;
+}
+
+abstract class AbstractVehicle {
+	model: string;
+	capacity: number;
+	abstract startEngine: (time: Date) => string;
+	stopEngine = (time: Date) => {
+		return 'engine stopped';
+	};
+}
+
+//? implements
+// class Vehicles implements IEngine {
+// 	model: string;
+// 	capacity: number;
+// 	startEngine = (time: Date) => {
+// 		return 'engine started';
+// 	};
+// }
+//? abstract
+class Vehicles extends AbstractVehicle {
+	startEngine = (time: Date) => {
+		return 'engine started';
+	};
+}
+
+console.log(new Vehicles().startEngine(new Date()));
