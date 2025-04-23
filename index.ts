@@ -2330,3 +2330,80 @@ class Vehicles extends AbstractVehicle {
 }
 
 console.log(new Vehicles().startEngine(new Date()));
+
+//! Decorators
+// ? Декоратор - жто функция модифицирующая объект и использует @ в качестве ключевого слова
+// ? В качестве декоратора может использоваться как функция, так и метод класса
+
+interface IMyAuto {
+	fuel: number;
+	open: boolean;
+	freeSeats: number;
+	isOpen: () => string;
+}
+
+// @closeAuto
+//? Нижний декоратор самой глубокой вложенности
+//* функции инициализируются снаружи внутрь а выполняются изнутри наружу
+@changeDoorStatus(false)
+@changeAmountFuel(20)
+class MyAuto implements IMyAuto {
+	fuel: number = 30;
+	open: boolean = true;
+	freeSeats: number = 3;
+	isOpen() {
+		console.log(this.fuel);
+		return this.open ? 'open' : 'closed';
+	}
+}
+
+// const myAuto = {
+// 	fuel: 30,
+// 	open: true,
+// 	freeSeats: 3,
+// 	isOpen() {
+// 		console.log(this.fuel);
+// 		return this.open ? 'open' : 'closed';
+// 	},
+// };
+
+const myCar = new MyAuto();
+
+//* универсальный декоратор, контролирующий двери авто
+// ? Декораторы могут принимать параметры
+// Фабрика декоратора
+function changeDoorStatus(status: boolean) {
+	console.log("door's status init");
+	return <T extends { new (...args: any[]): {} }>(constructor: T) => {
+		console.log("door's status changed");
+		return class extends constructor {
+			open = status;
+		};
+	};
+}
+
+//* базовая конструкция при работе с классами для декораторов
+//* Заменен декоратором выше
+// function closeAuto<T extends { new (...args: any[]): {} }>(constructor: T) {
+// 	return class extends constructor {
+// 		open: boolean = false;
+// 	};
+// }
+//* не сработает для нового объекта, т.к. мы не можем изменить конструктор
+// function addFuel(car: IMyAuto) {
+// 	car.fuel += 10;
+// 	console.log('add fuel');
+// 	return car;
+// }
+
+function changeAmountFuel(amount: number) {
+	console.log("fuel's amount init");
+	return <T extends { new (...args: any[]): {} }>(constructor: T) => {
+		console.log("fuel's amount changed");
+		return class extends constructor {
+			fuel = amount;
+		};
+	};
+}
+
+console.log(myCar.isOpen());
