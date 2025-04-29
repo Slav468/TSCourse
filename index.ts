@@ -2335,39 +2335,40 @@ console.log(new Vehicles().startEngine(new Date()));
 //? Декоратор - жто функция модифицирующая объект и использует @ в качестве ключевого слова
 //? В качестве декоратора может использоваться как функция, так и метод класса
 
-interface IMyAuto {
-	fuel: number;
-	open: boolean;
-	freeSeats: number;
-	isOpen: () => string;
-}
-
 // @closeAuto
 //? Нижний декоратор самой глубокой вложенности
 //* функции инициализируются снаружи внутрь а выполняются изнутри наружу
-@changeDoorStatus(false)
-@changeAmountFuel(20)
-class MyAuto implements IMyAuto {
-	fuel: number = 30;
-	open: boolean = true;
-	freeSeats: number = 3;
-	isOpen() {
-		console.log(this.fuel);
-		return this.open ? 'open' : 'closed';
-	}
-}
+// @changeDoorStatus(false)
+// @changeAmountFuel(20)
+// class MyAuto implements IMyAuto {
+// 	errors: any;
+// 	fuel: number = 30;
+// 	open: boolean = true;
+// 	_weight: number = 1000;
 
-// const myAuto = {
-// 	fuel: 30,
-// 	open: true,
-// 	freeSeats: 3,
+// 	@checkNumberOfSeats(5)
+// 	freeSeats: number = 3;
+
+// 	@logOnSet
+// 	set weight(num: number) {
+// 		this._weight = this._weight + num;
+// 	}
+
+// 	@logOnGet
+// 	get weight() {
+// 		return this._weight;
+// 	}
+
+// 	@checkAmountFuel
 // 	isOpen() {
-// 		console.log(this.fuel);
+// 		// console.log(this.fuel);
 // 		return this.open ? 'open' : 'closed';
-// 	},
-// };
+// 	}
 
-const myCar = new MyAuto();
+// 	startTravel(passengers: number) {
+// 		console.log(`start travel ${passengers} passengers`);
+// 	}
+// }
 
 //* универсальный декоратор, контролирующий двери авто
 // ? Декораторы могут принимать параметры
@@ -2381,6 +2382,49 @@ function changeDoorStatus(status: boolean) {
 		};
 	};
 }
+//? method decorator
+//* до 5 версии
+// function checkAmountFuel(
+// 	target: Object,
+// 	propertyKey: string | symbol,
+// 	descriptor: PropertyDescriptor
+// ) {
+// 	const originalMethod = descriptor.value; // Захватываем исходный метод
+
+// 	// Убеждаемся, что значение дескриптора - это функция, перед модификацией
+// 	if (typeof originalMethod !== 'function') {
+// 		throw new Error(
+// 			`Декоратор @checkAmountFuel может быть применен только к методам, а не к ${typeof originalMethod}`
+// 		);
+// 	}
+
+// 	descriptor.value = function (this: IMyAuto, ...args: any[]) {
+// 		// Добавляем ...args для передачи аргументов
+// 		console.log(`Проверка топлива: ${this.fuel}`);
+// 		// console.log(this); // Опционально: логируем экземпляр
+// 		// При необходимости добавьте сюда логику проверки топлива
+
+// 		// Вызываем исходный метод с правильным контекстом и аргументами
+// 		return originalMethod.apply(this, args);
+// 	};
+
+// 	return descriptor; // Хорошей практикой для декораторов является возврат дескриптора
+// }
+//? method decorator
+//* после 5 версии
+// function checkAmountFuel(originalMethod: any, context: any): any {
+// 	function reworkMethod(this: any, ...args: any[]) {
+// 		// Добавляем ...args для передачи аргументов
+// 		console.log(`Проверка топлива: ${this.fuel}`);
+// 		// console.log(this); // Опционально: логируем экземпляр
+// 		// При необходимости добавьте сюда логику проверки топлива
+// 		const result = originalMethod.apply(this, args);
+// 		// Вызываем исходный метод с правильным контекстом и аргументами
+// 		return result;
+// 	}
+
+// 	return reworkMethod;
+// }
 
 //* базовая конструкция при работе с классами для декораторов
 //* Заменен декоратором выше
@@ -2396,14 +2440,50 @@ function changeDoorStatus(status: boolean) {
 // 	return car;
 // }
 
-function changeAmountFuel(amount: number) {
-	console.log("fuel's amount init");
-	return <T extends { new (...args: any[]): {} }>(constructor: T) => {
-		console.log("fuel's amount changed");
-		return class extends constructor {
-			fuel = amount;
-		};
-	};
-}
+// function changeAmountFuel(amount: number) {
+// 	console.log("fuel's amount init");
+// 	return <T extends { new (...args: any[]): {} }>(constructor: T) => {
+// 		console.log("fuel's amount changed");
+// 		return class extends constructor {
+// 			fuel = amount;
+// 		};
+// 	};
+// }
 
-console.log(myCar.isOpen());
+// function checkNumberOfSeats(limit: number) {
+// 	return function (target: undefined, context: ClassFieldDecoratorContext) {
+// 		return function (this: any, newAmount: number) {
+// 			if (newAmount >= 1 && newAmount < limit) {
+// 				console.log('Valid');
+// 				return newAmount;
+// 			} else {
+// 				throw Error(`Больше ${limit} сидений быть не может, меньше 1 тоже`);
+// 			}
+// 		};
+// 	};
+// }
+
+// function logOnSet<T, R>(
+// 	target: (this: T, value: number) => R,
+// 	context: ClassSetterDecoratorContext<T, number>
+// ) {
+// 	return function (this: T, ...args: any): R {
+// 		console.log(`Изменяем значение на ${[...args]}`);
+// 		return target.apply(this, args);
+// 	};
+// }
+
+// function logOnGet<T, R>(
+// 	target: (this: T) => R,
+// 	context: ClassGetterDecoratorContext<T, number>
+// ) {
+// 	return function (this: T): R {
+// 		console.log(`Test`);
+// 		return target.apply(this);
+// 	};
+// }
+
+// const newCar = new MyAuto();
+// newCar.freeSeats = 5;
+// console.log(newCar);
+// console.log(newCar.weight);
